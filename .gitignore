@@ -1,0 +1,47 @@
+# Secrets and credential material
+*.token
+*.tokens
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+*.cer
+*.crt
+auth.json
+*-auth.json
+.ki2c-probe-auth.json
+
+# Captures and traces
+*.har
+*.saz
+*.xmatcap
+*.etl
+*.pcap
+*.pcapng
+*.trace
+captures/
+logs/
+
+# Account material
+*account*
+*xuid*
+*cookie*
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Build output
+dist/
+build/
+*.log
