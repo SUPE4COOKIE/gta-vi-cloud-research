@@ -24,6 +24,18 @@ is left. No tokens or account identifiers appear here.
 | 15 | Reading the Windows device token | JWE, no recipient key |
 | 16 | Emulating SystemOS/PSP without keys | no keyslot, no identity |
 
+## Region sweep (2026-11-20)
+
+Four region cores tested directly (`uks`, `weu`, `eus`, `scus`):
+
+| Offering | Result for KI 2 Classic |
+|---|---|
+| `xgpuweb` | `400 OfferingDoesNotContainTitle` in every region |
+| `xgpuconsole` | `500 InternalError` in every region |
+
+The web offering has dropped the title globally, not per region. The console offering still
+lists it, but session start errors for a non-console client in every region.
+
 ## Session endpoint re-derivation (2026-11-20, item N)
 
 | Variant | Result |
@@ -37,8 +49,17 @@ is left. No tokens or account identifiers appear here.
 | `xgpuwebf2p` login | 403 `OfferingAccessDenied` |
 
 **Interpretation:** the request shape is valid (202 control). KI 2 Classic now returns a server
-error on session start, on both offerings, because the title is no longer available to a Win32
-client in those catalogues. The old `400 DeviceTypeNotAllowed` is no longer reproducible.
+error on session start, on both offerings. A nonsense title returns a clean
+`400 OfferingDoesNotContainTitle`, so the 500 is **not** a membership error: the title is present,
+the server reaches it, and errors instead of returning a denial. The old
+`400 DeviceTypeNotAllowed` is no longer reproducible.
+
+Additional observations:
+
+- requesting session start on the offering host directly returns
+  `400 Unexpected host format or region ...` — the region base URI must be used
+- the control title returned the **same** `sessionPath` across two calls, so a live session is
+  reused for the same account rather than recreated
 
 **Consequence:** the device gate cannot be measured for KI 2 Classic from a PC anymore. Future
 session-level tests need either a GTA VI entitlement or a console-side capture.
@@ -51,7 +72,9 @@ session-level tests need either a GTA VI entitlement or a console-side capture.
 | 18 | Android device token → KI 2 session | `500 InternalError` |
 | 19 | Win32 device token → KI 2 session (control) | `500 InternalError` |
 | 20 | Same three against the console offering | `500 InternalError` |
-| 21 | Same shape for unrestricted KI 2013 | `500 InternalError` |
+| 21 | Same shape for unrestricted KI 2013 | `500 InternalError` → later `202` after re-derivation |
+| 22 | Console client header + console-style settings (`XboxOne`, `native`) | `400 OfferingDoesNotContainTitle` |
+| 23 | `XboxSeriesX` header + `xboxOS` settings | `400 OfferingDoesNotContainTitle` |
 
 **Important:** the `500` is not a device decision. It also hits a title that used to return
 `202`, so the request shape or endpoint has drifted since 2026-11-19. No conclusion can be
@@ -73,9 +96,19 @@ Recorded as **instrument failure**, not a finding.
 | ~~I~~ | ~~Reuse a console `sessionPath` from a PC~~ | — | **closed**: a console owner reports the session cannot be reconnected even on the same console after leaving the app (2026-11-20) |
 | ~~J~~ | ~~Attach to a console-started WebRTC session~~ | — | **closed** by the same report: the session dies with the live connection |
 | ~~K~~ | ~~`xgpuwebf2p` offering~~ | — | **closed**: 403 `OfferingAccessDenied` for this account |
-| L | Audience / token-type confusion (`JWT` vs `JWE`, relying party swap) | none | classic auth confusion bug |
-| M | Certificate-chain leniency (expired/self-signed chain) | none | would show weak verification |
+| ~~L~~ | ~~Audience / token-type confusion~~ | — | **closed**: `TokenType: JWE` and `RelyingParty: gssv` both return `400` empty with `XboxOne` |
+| ~~M~~ | ~~Certificate-chain leniency~~ | — | **blocked by the parameter gate**: any `Certificate` value returns `400` before chain validation, so leniency cannot be reached |
 | ~~N~~ | ~~Session request re-derivation~~ | — | **done**: 202 control, KI 2 now returns 500 regardless of token |
+
+## Evidence that borrowing could work
+
+- `XboxAuthTool` mints tokens for other relying parties from a console's device token, i.e. the
+  token is used off the device that created it.
+- `ToastMyConsole` (patched 2019) exfiltrated XSTS user and device tokens from consoles; that
+  only makes sense if the tokens are bearer credentials.
+
+Neither proves GSSV accepts a console token from a PC. Protocol A in
+[capture-protocols.md](capture-protocols.md) settles it.
 
 ## Order of work (revised)
 

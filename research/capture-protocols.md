@@ -1,0 +1,110 @@
+# Capture protocols
+
+Turnkey steps for the open matrix items. Everything here is metadata-only: field names,
+status codes, claim categories. No token values leave the tester's machine.
+
+## Why this is worth doing
+
+Two public artifacts suggest device tokens are **bearer credentials**, not channel-bound:
+
+- `XboxAuthTool` takes a console device token and mints tokens for other relying parties — a
+  token used off the device it came from.
+- `ToastMyConsole` (patched 2019) extracted XSTS user and device tokens from consoles and sent
+  them to a server for collection. Exfiltrating tokens would be pointless if they only worked
+  on the originating console.
+
+That is evidence, not proof. The replay test is what settles it.
+
+## Protocol A — capture a console device token and replay from PC
+
+**Tester needs:** Xbox One/Series, dev mode, a Windows PC, XMAT.
+
+1. Enable dev mode, install XMAT on the PC, point the console at the PC proxy.
+2. **Capture around sign-in or reboot, not only around launch.** A console owner's DNS logs
+   during a launch showed delivery and store hosts but no auth host, which suggests the device
+   token is issued once at sign-in/boot and then cached. If the capture starts at launch, the
+   interesting request may already have happened.
+3. Launch Killer Instinct 2 Classic from the console.
+4. In XMAT, look for `device.auth.xboxlive.com`.
+   - If it is not present, stop: the auth is below the app layer and dev mode cannot see it.
+     Record that, it is a result.
+5. If present, note:
+   - HTTP status,
+   - request field names (no values),
+   - whether a token is returned and its type (JWT vs JWE).
+6. Copy the device token **locally only**. Do not paste it anywhere.
+7. On the PC, run the token through XSTS as `Properties.DeviceToken`, then GSSV login, then
+   session start for the same title.
+8. Report only: statuses, `gsToken.devicetype`, and the session response code.
+
+| Result | Meaning |
+|---|---|
+| Session `202` | Tokens are portable; a console can mint access for a PC |
+| `400 DeviceTypeNotAllowed` | The class is right but something else binds it to the console |
+| `401` | Token is single-use, expired, or bound to the channel |
+
+## Protocol B — borrow the `gsToken` instead
+
+Same capture, but skip device auth entirely:
+
+1. Capture the `gsToken` the console receives from GSSV.
+2. From the PC, call `/v5/sessions/cloud/play` with `Authorization: Bearer <gsToken>`.
+3. Report the status.
+
+This tests the highest layer first. If it works, no device token is needed at all.
+
+## Protocol C — replay the device-auth request
+
+1. Capture one `/device/authenticate` request, all headers included.
+2. Replay it unchanged from a PC within 60 seconds.
+3. Then replay it again after 10 minutes.
+
+| Result | Meaning |
+|---|---|
+| Both accepted | No freshness binding |
+| First accepted, second rejected | Timestamp/nonce window enforced |
+| Both rejected | Bound to the channel or the source device |
+
+## Protocol D — cross-console certificate swap
+
+Needs **two consoles** and two captures. Swap the certificate field from console B into a
+request shaped for console A, leaving A's signature.
+
+Expected: rejection. If accepted, certification is not bound to the device record — a major
+finding.
+
+## Protocol E — clock and nonce edges
+
+From a captured request, replay with:
+
+- a timestamp 30 seconds in the past,
+- a timestamp 30 seconds in the future,
+- a reused nonce with a fresh signature.
+
+Record which are accepted.
+
+## Protocol F — keys
+
+Only relevant if a console is glitched. Not requested, not recommended, and out of scope for
+this project's testers.
+
+## What to send back
+
+```
+protocol:      A / B / C / D / E
+console:       model + firmware
+dev mode:      yes/no
+device.auth:   visible / not visible
+statuses:      device.auth ___, xsts ___, gssv ___, play ___
+devicetype:    claim value only (or "none")
+notes:         anything unexpected
+```
+
+Never send the token, the certificate, the request body, or a capture file.
+
+## Safety
+
+- Throwaway Microsoft account.
+- A console you are willing to risk; a relay pattern can attract attention.
+- No public posting of captures.
+- Stop if anything asks for your password or MFA in a tool.

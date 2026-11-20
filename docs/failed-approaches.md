@@ -93,7 +93,13 @@ different rule" theory.
 All reported as unsuccessful. Recorded as **community reported**; the exact status codes were
 not shared.
 
-## 10. Reading the encrypted device token
+## 10. DNS-level observation
+
+Logging the console's DNS queries shows hostnames only. During a launch, a tester saw delivery
+and store hosts but no auth host — the token was already cached. DNS cannot show paths,
+headers, or bodies. Useful for mapping, not for capturing the exchange.
+
+## 11. Reading the encrypted device token
 
 **Tried:** inspecting the official Windows device token.
 

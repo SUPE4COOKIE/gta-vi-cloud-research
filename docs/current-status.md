@@ -73,6 +73,10 @@ Anything less is progress, not success.
 - A PS4 homebrew setup is reported to be identified as `SAMSUNGTV` in its device class. If
   true, it is the first non-TV client reported to hold that class — relevant to KI 2 Classic,
   not GTA VI.
+- A console owner ran a local DNS server and logged queries during a KI 2 launch: delivery and
+  store hosts appeared (`d2.xboxlive.com`, `www.xbox.com`, CDN CNAMEs), but no auth host, and a
+  reboot did not re-query. Consistent with the device token being issued at sign-in/boot and
+  cached. DNS gives hostnames only — no paths, no payloads.
 - The 2026 Xbox One boot ROM glitch is reported to yield key dumps and SystemOS decryption.
   Not reproduced, not requested, and not required for any test we can run today.
 
@@ -83,8 +87,10 @@ shape. KI 2 Classic now returns `500 InternalError` on both offerings, for every
 because the title is no longer available to a Win32 client in those catalogues. The old
 `400 DeviceTypeNotAllowed` is not reproducible anymore.
 
-Consequence: the device gate cannot be measured for KI 2 Classic from a PC at present. A future
-test needs a GTA VI entitlement or a console-side capture.
+Consequence: the device gate cannot be measured for KI 2 Classic from a PC at present. A nonsense
+title returns `400 OfferingDoesNotContainTitle`, so the `500` is not a catalogue-membership error —
+the server reaches the title and fails instead of denying. A future test needs a GTA VI
+entitlement or a console-side capture.
 
 ## Snapshot drift
 

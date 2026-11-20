@@ -4,6 +4,14 @@ All notable changes to this repository. Dates are local to the investigation.
 
 ## Unreleased
 
+### Added
+- Community DNS observation: launch touches delivery/store hosts, auth not visible (cached),
+  which moves the capture window to sign-in/boot.
+
+### Added
+- `research/capture-protocols.md`: turnkey capture and replay protocols A–F for the open matrix
+  items, with token-portability evidence from public tooling.
+
 ### Changed
 - Re-derived the session request: `202` control restored. KI 2 Classic now returns `500` on both
   offerings, so the device gate is no longer measurable from PC; `xgpuwebf2p` returns `403`.
