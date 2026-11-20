@@ -64,6 +64,9 @@ Anything less is progress, not success.
 - An Xbox owner reports KI 2 Classic reaching the "Launching with cloud gaming" screen on a
   real console (2026-11-20). **Gameplay and console model are still unconfirmed** — the
   screenshot shows the loading screen, not a match. Treat the premise as partially confirmed.
+- A console owner ran the same title from a PC client with the **same account** and received
+  `400` (2026-11-20). The request was made from a web/macOS client, not the native Windows app.
+  This is the account-vs-device comparison the roadmap asked for, and it points at the device.
 - The maintainer reports KI 2 Classic **did not start on a Samsung TV**, despite `SAMSUNGTV`
   being in the allowlist. Details pending. This weakens the TV branch and the PS4/TV-class
   claim below.
@@ -72,6 +75,13 @@ Anything less is progress, not success.
   not GTA VI.
 - The 2026 Xbox One boot ROM glitch is reported to yield key dumps and SystemOS decryption.
   Not reproduced, not requested, and not required for any test we can run today.
+
+## Instrument drift (2026-11-20)
+
+Session start currently returns `500 InternalError` for our request shape, **including** the
+unrestricted KI 2013 control that used to return `202`. This is not a device decision; it means
+the request shape or endpoint changed. Session-level tests are invalid until the current request
+is re-derived from a working client. See `research/server-hole-matrix.md`, item N.
 
 ## Snapshot drift
 

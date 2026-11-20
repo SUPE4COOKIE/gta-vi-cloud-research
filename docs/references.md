@@ -49,6 +49,11 @@ Public sources used or reviewed. Links are external and may change.
 - Tom's Hardware coverage of the "Bliss" voltage glitch — <https://www.tomshardware.com/video-games/console-gaming/microsofts-unhackable-xbox-one-has-been-hacked-by-bliss-the-2013-console-finally-fell-to-voltage-glitching-allowing-the-loading-of-unsigned-code-at-every-level>
 - Keysight security highlight — <https://www.keysight.com/blogs/en/tech/nwvs/2026/05/27/security-highlight-breaking-the-unhackable-xbox-one>
 
+## Parallel research
+
+- Xbox PC app identity research (four-gate model, `WindowsOneCore`) — <https://github.com/veganturdmissle/xbox-pc-app-identity-research>
+- XboxAuthTool, token generation from a device token — <https://github.com/XB1-Hexdecimal/XboxAuthTool>
+
 ## How to cite this repository
 
 If you reference these findings, cite the document and the date of the snapshot, not the

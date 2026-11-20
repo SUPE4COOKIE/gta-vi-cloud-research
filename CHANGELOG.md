@@ -5,6 +5,12 @@ All notable changes to this repository. Dates are local to the investigation.
 ## Unreleased
 
 ### Changed
+- Recorded session endpoint drift (`500` even for the old control) and marked session tests
+  invalid until the request is re-derived.
+- Closed session-reuse ideas (I/J) with a console owner's report.
+- Noted parallel research reporting `WindowsOneCore` for the PC app, and added references.
+
+### Changed
 - Samsung TV KI 2 attempt reported as unsuccessful; TV branch downgraded to "details pending".
 - Added community-tested negative routes (old Android builds, legacy paths, non-prod hosts,
   TV flow with Xbox headers) to failed approaches.

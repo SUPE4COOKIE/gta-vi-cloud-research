@@ -83,7 +83,17 @@ Community-tested (not by this project), all without a successful session:
 Recorded as **community reported**. Useful because it closes the "maybe an older client had a
 different rule" theory.
 
-## 9. Reading the encrypted device token
+## 9. Request-shape probing (community tested)
+
+- `/device/authenticate` with random tokens padded to the same length as a real one
+- `beta-device` and other host variants
+- combinations of `offerId`, test and pre-production `/play` endpoints
+- Samsung TV flow with Xbox headers, taken from reverse-engineered firmware
+
+All reported as unsuccessful. Recorded as **community reported**; the exact status codes were
+not shared.
+
+## 10. Reading the encrypted device token
 
 **Tried:** inspecting the official Windows device token.
 

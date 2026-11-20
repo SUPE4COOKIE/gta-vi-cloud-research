@@ -53,6 +53,10 @@ The `gsToken` claim set observed includes: `accountCountry`, `country`, `country
 | user + `Android` | `Android` |
 | user + `iOS` | `iOS` |
 
+Parallel public research reports that the official Windows app's cloud token carries
+`WindowsOneCore` rather than `Win32` (community reported, 2026-11-18). Both are non-console
+classes; the difference does not change the gate.
+
 This is the observation that makes the device token the interesting object. The device
 class is not a header, not a query parameter, and not configurable in the session request.
 

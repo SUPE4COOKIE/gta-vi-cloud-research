@@ -27,6 +27,21 @@ Same account, same client, back to back:
 Entitlement, region, headers and client version are identical. The only difference is the
 title's allowlist. That is why entitlement is not the explanation for the refusal.
 
+## Community A/B check
+
+A console owner who had just launched KI 2 on an Xbox then sent a manual session request from a
+PC client with the **same account**:
+
+```
+titleId: KILLERINSTINCT2CLASSIC
+client:  web client (osName macOS, sdkType web)
+result:  400
+```
+
+Same account, same title, same day: console accepts, PC refuses. Recorded as **community
+reported** — the exact response body was not shared. It supports the device-class explanation
+over an account or entitlement explanation.
+
 ## Four different things people conflate
 
 | Layer | Question it answers | Observed behaviour |
