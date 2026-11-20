@@ -78,10 +78,13 @@ Anything less is progress, not success.
 
 ## Instrument drift (2026-11-20)
 
-Session start currently returns `500 InternalError` for our request shape, **including** the
-unrestricted KI 2013 control that used to return `202`. This is not a device decision; it means
-the request shape or endpoint changed. Session-level tests are invalid until the current request
-is re-derived from a working client. See `research/server-hole-matrix.md`, item N.
+Session start works again: KI 2013 returns `202` with a `sessionPath` using the current body
+shape. KI 2 Classic now returns `500 InternalError` on both offerings, for every device token,
+because the title is no longer available to a Win32 client in those catalogues. The old
+`400 DeviceTypeNotAllowed` is not reproducible anymore.
+
+Consequence: the device gate cannot be measured for KI 2 Classic from a PC at present. A future
+test needs a GTA VI entitlement or a console-side capture.
 
 ## Snapshot drift
 

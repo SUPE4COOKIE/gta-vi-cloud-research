@@ -5,6 +5,10 @@ All notable changes to this repository. Dates are local to the investigation.
 ## Unreleased
 
 ### Changed
+- Re-derived the session request: `202` control restored. KI 2 Classic now returns `500` on both
+  offerings, so the device gate is no longer measurable from PC; `xgpuwebf2p` returns `403`.
+
+### Changed
 - Recorded session endpoint drift (`500` even for the old control) and marked session tests
   invalid until the request is re-derived.
 - Closed session-reuse ideas (I/J) with a console owner's report.

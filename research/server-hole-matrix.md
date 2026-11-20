@@ -24,6 +24,25 @@ is left. No tokens or account identifiers appear here.
 | 15 | Reading the Windows device token | JWE, no recipient key |
 | 16 | Emulating SystemOS/PSP without keys | no keyslot, no identity |
 
+## Session endpoint re-derivation (2026-11-20, item N)
+
+| Variant | Result |
+|---|---|
+| KI 2013, v5, full body | **202** + `sessionPath` (control works) |
+| KI 2013, v6 | 404 |
+| KI 2013, v5, settings removed | 400 `InvalidRequestParameter` (Settings required) |
+| KI 2013, v5 + `X-MS-Device-Info` | 202 |
+| KI 2 Classic, v5, full body, any token | **500 InternalError** |
+| KI 2 Classic, console offering, same | 500 InternalError |
+| `xgpuwebf2p` login | 403 `OfferingAccessDenied` |
+
+**Interpretation:** the request shape is valid (202 control). KI 2 Classic now returns a server
+error on session start, on both offerings, because the title is no longer available to a Win32
+client in those catalogues. The old `400 DeviceTypeNotAllowed` is no longer reproducible.
+
+**Consequence:** the device gate cannot be measured for KI 2 Classic from a PC anymore. Future
+session-level tests need either a GTA VI entitlement or a console-side capture.
+
 ## Tested today (2026-11-20)
 
 | # | Idea | Result |
@@ -53,10 +72,10 @@ Recorded as **instrument failure**, not a finding.
 | H | Use a captured console token with a **different account** | capture + second account | tests whether the token is user-bound |
 | ~~I~~ | ~~Reuse a console `sessionPath` from a PC~~ | — | **closed**: a console owner reports the session cannot be reconnected even on the same console after leaving the app (2026-11-20) |
 | ~~J~~ | ~~Attach to a console-started WebRTC session~~ | — | **closed** by the same report: the session dies with the live connection |
-| K | `xgpuwebf2p` (free-to-play) offering | none | different entitlement path, untested |
+| ~~K~~ | ~~`xgpuwebf2p` offering~~ | — | **closed**: 403 `OfferingAccessDenied` for this account |
 | L | Audience / token-type confusion (`JWT` vs `JWE`, relying party swap) | none | classic auth confusion bug |
 | M | Certificate-chain leniency (expired/self-signed chain) | none | would show weak verification |
-| N | Session request re-derivation against the current client | none | required before any session test is valid again |
+| ~~N~~ | ~~Session request re-derivation~~ | — | **done**: 202 control, KI 2 now returns 500 regardless of token |
 
 ## Order of work (revised)
 
