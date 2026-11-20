@@ -5,6 +5,17 @@ All notable changes to this repository. Dates are local to the investigation.
 ## Unreleased
 
 ### Changed
+- Samsung TV KI 2 attempt reported as unsuccessful; TV branch downgraded to "details pending".
+- Added community-tested negative routes (old Android builds, legacy paths, non-prod hosts,
+  TV flow with Xbox headers) to failed approaches.
+- Added console-ban risk note for any token-reuse experiment.
+- Documented why a retail HDD dump does not yield a decrypted SystemOS.
+
+### Added
+- Community-reported items: console KI 2 launch, `SAMSUNGTV` classification on PS4, 2026 Xbox
+  One boot ROM glitch and what it would (and would not) enable.
+
+### Changed
 - Project renamed to **GTA VI Cloud Research**; repository will move to `gta-vi-cloud-research`.
 
 ### Added

@@ -71,7 +71,19 @@ still returned `DeviceTypeNotAllowed`.
 **Why it is a trap:** login and session authorisation are different gates. A token that
 exists is not a token that is trusted for a restricted title.
 
-## 8. Reading the encrypted device token
+## 8. Old clients, legacy paths and non-production hosts
+
+Community-tested (not by this project), all without a successful session:
+
+- the oldest Android xCloud builds, which use the same endpoints and hosts
+- legacy API paths
+- non-production hosts
+- the Samsung TV flow with Xbox headers
+
+Recorded as **community reported**. Useful because it closes the "maybe an older client had a
+different rule" theory.
+
+## 9. Reading the encrypted device token
 
 **Tried:** inspecting the official Windows device token.
 

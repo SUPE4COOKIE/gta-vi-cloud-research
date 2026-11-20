@@ -35,6 +35,20 @@ Public sources used or reviewed. Links are external and may change.
 - unifideck xCloud notes (offering/entitlement observations, `FERDINAND`) — <https://github.com/mubaraknumann/unifideck/blob/staging/docs/microsoft-xcloud.md>
 - Xbox Wire, cloud playtime changes (September 2026) — <https://news.xbox.com/en-us/2026/09/03/xbox-cloud-gaming-changes/>
 
+## Xbox One system files
+
+- Xbox One Research wiki, operating system layout — <https://xboxoneresearch.github.io/wiki/operating-system/xbox-operating-system/>
+- Xbox One Research wiki, firmware/OSU history — <https://xboxoneresearch.github.io/wiki/operating-system/firmware/>
+- OSU update archive — <https://archive.org/download/xbox-one-system-update-archive>
+- QuantumTunnel SystemOS flash dumper — <https://github.com/XboxOneResearch/QuantumTunnel>
+- GBAtemp report on the 2020 internal SDK leak — <https://gbatemp.net/threads/xbox-one-internal-sdk-has-leaked-the-ms-equivalent-to-a-gigaleak.579751/>
+
+## Xbox One boot ROM research (2026)
+
+- RE//verse 2026 talk, "Hacking the Xbox One" — <https://www.youtube.com/watch?v=FTFn4UZsA5U>
+- Tom's Hardware coverage of the "Bliss" voltage glitch — <https://www.tomshardware.com/video-games/console-gaming/microsofts-unhackable-xbox-one-has-been-hacked-by-bliss-the-2013-console-finally-fell-to-voltage-glitching-allowing-the-loading-of-unsigned-code-at-every-level>
+- Keysight security highlight — <https://www.keysight.com/blogs/en/tech/nwvs/2026/05/27/security-highlight-breaking-the-unhackable-xbox-one>
+
 ## How to cite this repository
 
 If you reference these findings, cite the document and the date of the snapshot, not the

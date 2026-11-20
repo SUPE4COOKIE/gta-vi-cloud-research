@@ -38,6 +38,7 @@ flowchart LR
 | Official Windows client GSSV token at sign-in | U4 | Sign in as the entitled account; record status and claim categories only | Medium | No |
 | Catalogue scans across days and accounts | U5 | Existing read-only tooling | Low | Partially |
 | Samsung TV run of KI 2 Classic | U6 | A TV owner | Low, if hardware exists | No |
+| Glitched fat Xbox One key dump / SystemOS decrypt (2026 reported) | U1, U2, U3 | Physical glitch hardware | Very high | No |
 
 ## Ranked by value per effort
 
@@ -61,7 +62,7 @@ flowchart LR
 | Retail console + network proxy | Connection pattern (hosts, timing); TLS payload remains encrypted | Read the device-auth body |
 | Dev mode | App-level HTTP via developer tooling; system logs depending on build | Guaranteed SystemOS auth visibility |
 | Devkit | Deeper tracing than retail dev mode | Make the server trust a non-console |
-| Exploited console | Potentially SystemOS files, logs and binaries | Guaranteed certificate or key extraction |
+| Exploited console | Potentially SystemOS files, logs and binaries; 2026 glitch reports key dumps | Guaranteed server acceptance of a cloned identity |
 | Samsung TV | Whether the TV starts KI 2 Classic | Anything for GTA VI |
 
 **Nothing in this table lets a PC inherit the console's identity.** The console is a

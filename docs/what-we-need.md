@@ -49,7 +49,16 @@ distinguish "service changed" from "this account changed".
 
 **What to report:** title start result, region, error text if any.
 
-## 6. Public-source contributions
+## 6. A glitched fat Xbox One (high value, high risk, not requested)
+
+The 2026 boot ROM glitch reportedly yields key dumps and SystemOS decryption. In theory that
+lets someone read the console auth implementation and inspect the certificate material.
+
+It is listed for completeness, not as a request. It needs physical hardware, hardware
+modification, and carries real risk to the console. Even if done, whether the extracted
+identity is accepted from a non-console is unproven.
+
+## 7. Public-source contributions
 
 - Static analysis of console provider exports, with addresses and evidence labels.
 - Review of open-source clients: what they send, not what they claim.
@@ -66,6 +75,12 @@ distinguish "service changed" from "this account changed".
 | Another `device.auth` string sweep | Same |
 | Screenshots of a game card | Not a session, not gameplay |
 | "It works on my PC" without a method | Unreproducible |
+
+## If anyone tests token reuse
+
+A console that starts minting device tokens for a PC may look like abuse. Any such test should
+use a **throwaway Microsoft account on a cheap console**, never a main account. The project does
+not ask anyone to risk an account or a console.
 
 ## How to offer an item
 

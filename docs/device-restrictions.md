@@ -63,6 +63,19 @@ titles and the same two restricted entries.
 **Result:** catalogue gating is per offering, not per device claim. Session-time device
 authorisation is a separate gate.
 
+## The TV branch just got weaker
+
+The maintainer reports that **Killer Instinct 2 Classic did not start on a Samsung TV**, despite
+`SAMSUNGTV` being in the title's allowlist. Details (model, region, app version, error) are
+pending.
+
+If that holds, the allowlist entry does not mean "any Samsung TV can play it". It may be stale,
+region-specific, or tied to a particular TV app build. That also weakens the community claim
+that a PS4 is "identified as a SAMSUNGTV" and could therefore play KI 2.
+
+Recorded as **locally reported, details pending**. It does not change the GTA VI picture, whose
+allowlist has no TV class at all.
+
 ## Why SAMSUNGTV matters, and why it does not solve GTA VI
 
 KI 2 Classic admits `SAMSUNGTV`; GTA VI does not. Even a perfect Samsung TV identity would

@@ -59,6 +59,20 @@ Anything less is progress, not success.
   probe account; see [xbox-app-investigation.md](xbox-app-investigation.md). This explains
   earlier "missing Play button" confusion and is not a device-identity result.
 
+## Community reports not yet reproduced here
+
+- An Xbox owner reports KI 2 Classic reaching the "Launching with cloud gaming" screen on a
+  real console (2026-11-20). **Gameplay and console model are still unconfirmed** — the
+  screenshot shows the loading screen, not a match. Treat the premise as partially confirmed.
+- The maintainer reports KI 2 Classic **did not start on a Samsung TV**, despite `SAMSUNGTV`
+  being in the allowlist. Details pending. This weakens the TV branch and the PS4/TV-class
+  claim below.
+- A PS4 homebrew setup is reported to be identified as `SAMSUNGTV` in its device class. If
+  true, it is the first non-TV client reported to hold that class — relevant to KI 2 Classic,
+  not GTA VI.
+- The 2026 Xbox One boot ROM glitch is reported to yield key dumps and SystemOS decryption.
+  Not reproduced, not requested, and not required for any test we can run today.
+
 ## Snapshot drift
 
 Catalogue contents changed during the project:

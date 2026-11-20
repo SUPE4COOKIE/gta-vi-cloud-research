@@ -55,6 +55,46 @@ about the emulator's limits, not a claim about retail TVs.
 emulator is explicitly not a substitute for it. A booted emulator would not mint a
 Microsoft-accepted `SAMSUNGTV` identity.
 
+## What is publicly obtainable
+
+| Artifact | Where | Usable? |
+|---|---|---|
+| OSU update packages (`system.xvd`, `host.xvd`, …) | Microsoft CDN and archive.org mirrors | Encrypted containers; no public retail ODK |
+| Dev-mode file dumps | `QuantumTunnel` on a console with a SYSTEM shell | `certkeys.bin` (dev cert) and unmounted files; mounted `system.xvd` cannot be read |
+| 2020 "xsec" SDK leak (reported to include Xbox One OS source and keys) | Taken down publicly; circulates privately | Not something this project will source |
+| Decrypted firmware stages | 2026 "Bliss" glitch, on hardware | Requires physical glitching |
+
+A full retail HDD dump circulates publicly. It contains the containers and user data, not a
+decrypted OS: `system.xvd`/`host.xvd` are encrypted with a retail ODK that is not public. Booting
+that OS in a VM (ESXi or otherwise) would still lack the PSP keyslot and the console certificate,
+so it would reach the same wall.
+
+Important detail from the Xbox One Research wiki: **dev mode loads the developer keyslot, not the
+retail keyslot.** A dev-mode dump therefore does not decrypt retail content, and does not hand
+you the retail console identity.
+
+## 2026: the Xbox One boot ROM glitch ("Bliss")
+
+Reported at RE//verse 2026 and covered by Tom's Hardware, Kotaku and Keysight: a voltage
+glitch against the Xbox One boot ROM, demonstrated on fat models, achieving supervisor
+execution, efuse/key dump and decryption of the early boot stages (SP1, SP2, 2BL, firmware).
+Reported as unpatchable on original fat hardware.
+
+**What this changes:** full SystemOS decryption and key extraction is no longer purely
+theoretical. That is the route to reading the console-side implementation of
+`XblaGetConsoleCert`, `XblaGetAttestation` and the security-processor bridge directly.
+
+**What it does not establish:**
+
+- that the extracted material can produce a device identity Microsoft will accept from a PC;
+- that attestation is not bound to the specific console;
+- that a cloned identity survives server-side checks.
+
+**Status:** community reported / news, not reproduced here. It requires physical hardware and
+invasive modification, and it is outside what this project will ask anyone to do.
+
+See [what-we-need.md](what-we-need.md) for how it ranks as an access route.
+
 ## Console emulation projects
 
 Public Xbox One/Series research projects were reviewed for identity work. They document
