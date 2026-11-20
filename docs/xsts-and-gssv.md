@@ -53,12 +53,23 @@ The `gsToken` claim set observed includes: `accountCountry`, `country`, `country
 | user + `Android` | `Android` |
 | user + `iOS` | `iOS` |
 
+Microsoft's own token documentation lists the `dty` claim in the `xdi` block with values such as
+`Scarlett`, `XboxOne` and `Windows` (see references). That matches the classes observed here and
+confirms the claim is the device-class carrier, not a client string.
+
 Parallel public research reports that the official Windows app's cloud token carries
 `WindowsOneCore` rather than `Win32` (community reported, 2026-11-18). Both are non-console
 classes; the difference does not change the gate.
 
 This is the observation that makes the device token the interesting object. The device
 class is not a header, not a query parameter, and not configurable in the session request.
+
+## Other authenticated attributes
+
+Microsoft's token documentation also describes device capability (`dca`), debug mode (`ddm`),
+pairwise identity (`dpi`), title identity (`xti`) and sandbox (`sbx`) claims. Our model focuses
+on `dty`, but these are candidates for additional server-side inputs and have not been compared
+between authenticated `Win32` and official Windows clients.
 
 ## Offerings
 

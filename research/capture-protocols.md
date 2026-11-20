@@ -17,7 +17,9 @@ That is evidence, not proof. The replay test is what settles it.
 
 ## Protocol A — capture a console device token and replay from PC
 
-**Tester needs:** Xbox One/Series, dev mode, a Windows PC, XMAT.
+**Tester needs:** an Xbox **development console** (XMAT documents recovery 2106 or later) or a
+devkit; retail Dev Mode may not expose console capture. Verify the capture path with an ordinary
+request before trusting any absence. A Windows PC runs XMAT.
 
 1. Enable dev mode, install XMAT on the PC, point the console at the PC proxy.
 2. **Capture around sign-in or reboot, not only around launch.** A console owner's DNS logs
@@ -67,11 +69,45 @@ This tests the highest layer first. If it works, no device token is needed at al
 
 ## Protocol D — cross-console certificate swap
 
-Needs **two consoles** and two captures. Swap the certificate field from console B into a
-request shaped for console A, leaving A's signature.
+Needs **two consoles** and, critically, a **valid signature over the modified body**. The PoP
+signature covers the request, so swapping a certificate while keeping A's signature is expected
+to fail for a trivial reason and proves nothing about device records.
 
-Expected: rejection. If accepted, certification is not bound to the device record — a major
-finding.
+The meaningful version is only possible with B's signing key available to sign a body that
+carries A's certificate — i.e. a console with extractable keys. Without that, skip this protocol.
+
+## Protocol G — full session lifecycle
+
+Capture the whole path, not just authentication:
+
+```
+POST /v5/sessions/cloud/play
+  → session state polling
+  → /connect
+  → SDP/ICE
+  → first decoded frame
+```
+
+Record: offering, region, title ID, status codes, `queueConfig` presence, state transitions,
+error category, correlation IDs, and whether a separate Long Play Token is required (name only,
+never the value).
+
+A console `202` and a PC `500` for the same title and account at roughly the same time would
+narrow the failure sharply. A console-side `500` would instead suggest a title or service
+problem.
+
+## Protocol H — token portability, no console
+
+Before borrowing a console token, check whether a normal PC token is portable at all:
+
+1. Take one legitimate `Win32` `gsToken`.
+2. Use it for a session start on the same account from two different processes/environments you
+   control.
+3. Record status and whether a session is created or reused.
+
+If a PC token cannot be reused even by the same account elsewhere, a session/token binding
+mechanism exists and must be understood before blaming attestation. If it can, tokens are at
+least transport-tolerant for the PC flow.
 
 ## Protocol E — clock and nonce edges
 

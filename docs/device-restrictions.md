@@ -75,8 +75,9 @@ A subsequent test asked whether the console catalogue is filtered by the caller'
 token. Logging into `xgpuconsole` with a `Win32` device token produced the **same** 2,865
 titles and the same two restricted entries.
 
-**Result:** catalogue gating is per offering, not per device claim. Session-time device
-authorisation is a separate gate.
+**Result:** a `Win32` device token did not change that particular `xgpuconsole` listing. That is
+narrower than "gating is per offering": no console-class token has been compared, so the
+catalogue may still react to device class. Session-time authorisation remains a separate gate.
 
 ## The TV branch just got weaker
 

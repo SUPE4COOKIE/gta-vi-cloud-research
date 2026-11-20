@@ -134,6 +134,10 @@ flowchart TD
     style K fill:#231a11,stroke:#7a5a1e,color:#ffd28a
 ```
 
+Solid arrows are **measured** token propagation. The final allowlist comparison is **inferred**,
+not observed: no console-side acceptance has been captured, and `SP_JWT` is initialised empty on
+the inspected builder path.
+
 Detailed walkthrough: [Authentication flow](docs/authentication-flow.md) · [XSTS and GSSV](docs/xsts-and-gssv.md) · [Console attestation](docs/console-attestation.md)
 
 ## Approaches already tested

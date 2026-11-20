@@ -93,12 +93,43 @@ Recorded as **instrument failure**, not a finding.
 | F | Glitched console key extraction, sign locally | hardware mod | removes the console from the loop |
 | G | Devkit identity | a devkit | devkits may hold a console-class cert |
 | H | Use a captured console token with a **different account** | capture + second account | tests whether the token is user-bound |
-| ~~I~~ | ~~Reuse a console `sessionPath` from a PC~~ | — | **closed**: a console owner reports the session cannot be reconnected even on the same console after leaving the app (2026-11-20) |
-| ~~J~~ | ~~Attach to a console-started WebRTC session~~ | — | **closed** by the same report: the session dies with the live connection |
+| I | Reuse a console `sessionPath` from a PC | capture | **limited observation**: one console owner could not reconnect even on the same console after leaving the app. That covers a terminated session, not every active-session lifecycle |
+| J | Attach to a console-started WebRTC session | capture | same limited observation; not ruled out for an active session |
 | ~~K~~ | ~~`xgpuwebf2p` offering~~ | — | **closed**: 403 `OfferingAccessDenied` for this account |
 | ~~L~~ | ~~Audience / token-type confusion~~ | — | **closed**: `TokenType: JWE` and `RelyingParty: gssv` both return `400` empty with `XboxOne` |
 | ~~M~~ | ~~Certificate-chain leniency~~ | — | **blocked by the parameter gate**: any `Certificate` value returns `400` before chain validation, so leniency cannot be reached |
 | ~~N~~ | ~~Session request re-derivation~~ | — | **done**: 202 control, KI 2 now returns 500 regardless of token |
+
+## Session-result chronology (read before comparing rows)
+
+The same title produced three different responses on three different days and contexts:
+
+| Date / context | Result |
+|---|---|
+| 2026-11-19, `xgpuweb`, `XboxComBrowser` | `400 DeviceTypeNotAllowed` (historical) |
+| 2026-11-20, default region base, full body | `500 InternalError` |
+| 2026-11-20, explicit region cores, `XboxComBrowser` | `400 OfferingDoesNotContainTitle` |
+| 2026-11-20, explicit region cores, `XboxOne` header | `500 InternalError` |
+
+Rows in this file must be read with their client header and host context. The `500` may be a
+title/config problem, an error path for a disallowed device, or something else; it is **not**
+established that it is the device check.
+
+## From external review (2026-11-21)
+
+An independent review of this repository proposed tests we had not specified. Recorded as
+untested:
+
+| # | Test | Effort |
+|---|---|---|
+| O | Explain the current `500`: compare `hasEntitlement`, `programs`, `userPrograms` against session result for KI 2, KI 2013 and a nonexistent title, with correlation IDs | Low |
+| P | Validate a full working PC stream as a control: `/play` → state → `/connect` → SDP/ICE → first frame | Low |
+| Q | Token portability prerequisite: reuse one legitimate `Win32` `gsToken` in two PC environments | Low |
+| R | Compare `WindowsOneCore` vs `Win32` sign-in paths on the same PC and the resulting `gsToken.devicetype` | Medium |
+| S | Audit non-`dty` claims (`dca`, `ddm`, `dpi`, `xti`, `sbx`) between PC and official client | Low |
+| T | Structural comparison of the synthetic request against the disassembled builder | Medium |
+| U | Capture the console's full session lifecycle, not just `/device/authenticate` | Medium |
+| V | Capture console-side catalogue/eligibility context (offering, programs, runtime, sandbox) | Low |
 
 ## Evidence that borrowing could work
 

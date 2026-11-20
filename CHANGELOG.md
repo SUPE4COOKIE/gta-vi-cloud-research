@@ -4,6 +4,13 @@ All notable changes to this repository. Dates are local to the investigation.
 
 ## Unreleased
 
+### Changed
+- Independent review corrections: softened the hardware-attestation claim, narrowed the
+  catalogue-gating conclusion, clarified the session-result chronology, relabelled session
+  reuse as a limited observation, fixed the certificate-swap protocol, and marked the README
+  diagram's allowlist comparison as inferred.
+- Added review-proposed tests O–V and protocols G/H.
+
 ### Added
 - Community DNS observation: launch touches delivery/store hosts, auth not visible (cached),
   which moves the capture window to sign-in/boot.

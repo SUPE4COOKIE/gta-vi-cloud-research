@@ -34,8 +34,9 @@ Signature validity was checked separately, so this is not a malformed request.
 
 **Result:** still `400`, same empty body.
 
-**Why it fails:** the server is not satisfied by field presence. It is checking material a PC
-cannot produce.
+**Why it fails:** the server is not satisfied by field presence. The hardware-attestation
+explanation is **inferred**, not proven: these tests show that filler fields are rejected, not
+what a genuine attestation would need to contain.
 
 ## 4. Using the PC-app offering
 
