@@ -135,6 +135,10 @@ so even real blobs arrive double-encoded through that path.
 **The type must match the attestation.** Same attestation, same second: `Scarlett` → `200`,
 `XboxOne` → `400`. `DeviceType` is a claim the hardware has to back, not a switch.
 
+**Cross-generation check (community measured, 2026-11-22).** An original Xbox One returns `200`
+for `XboxOne` with its own 1,208-char attestation, and a 3,196-char XCOS. The Series S
+attestation is 992 chars. So the rule is per-model matching, not "Scarlett only".
+
 **Two walls, not one.** `device.auth` returns XCOS, and `xsts/authorize` refuses that form
 outright — `400` with user tokens, alone, RETAIL, a dev sandbox, or no sandbox. The console
 converts XCOS to a **JWE** locally via `XblaProcessXcosDeviceToken`; from an app that call returns

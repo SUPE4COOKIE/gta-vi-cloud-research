@@ -118,7 +118,8 @@ Consequences for the model:
 
 - **There is no console-class blocklist at `device.auth`.** With matching attestation, `Scarlett`
   returns `200`; with the same attestation and `XboxOne` declared, `400`. The type must match what
-  the hardware attests.
+  the hardware attests. Cross-generation check: an original Xbox One returns `200` for `XboxOne`
+  with its own 1,208-char attestation.
 - **The `403` some of us chased is a shape artefact.** The shared 7-field script returns `403` for
   `Scarlett` and `XboxOne` alike, and double-encodes base64 blobs.
 - **XCOS is not a credential.** `xsts/authorize` refuses it in every combination — user tokens

@@ -112,9 +112,32 @@ not control.
 **Why it fails:** without the recipient key there is nothing to read. Treating the `200` as
 proof of a console class would be wrong.
 
+## 12. The `dnet` development-network endpoints
+
+**Tried:** `xsts.auth.dnet.xboxlive.com` and `device.auth.dnet.xboxlive.com` with production
+material and with dnet nonces.
+
+**Result:** every combination fails — `InvalidDeviceToken` (`0x8015DC23`), `InvalidRelyingParty`,
+`InvalidNonce`, `SystemUpdateUnknownVersion`. `dnet` requires a device token minted by `dnet`,
+and its device-auth will not mint one for a production-flighted build
+(`26100.9662.amd64fe.xb_flt_2610ge`).
+
+**Why it fails:** the console is not enrolled in a `dnet` flight. This needs a devkit, not a
+retail unit in Dev Mode.
+
+## 13. The `XDKS.1` sandbox on a retail account
+
+**Tried:** XSTS with `SandboxId: XDKS.1` using a retail account's user token.
+
+**Result:** `401`, XErr `2148916242` (`0x8015DC12`), `{"Identity":"xti","Message":"NoAccess"}`.
+
+**Why it fails:** the development sandbox is not available to a retail account at the token
+layer, so the request never reaches GSSV. A dev-console identity does not imply access to the
+dev sandbox under a retail account.
+
 ## What is *not* on this list
 
-- A real console capture — untested, not failed.
+- A real console capture — done at metadata level (2026-11-22); payloads stay unreadable on retail.
 - A real Samsung TV test — untested, not failed.
 - The exact server acceptance rule — unknown, not disproven.
 

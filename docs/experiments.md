@@ -25,6 +25,7 @@ recorded the result; values that would be credentials are never included.
 | 11 | One request, one chance — `Durango` | Single fresh-key probe | `400`, empty body | Locally tested |
 | 12 | Console fields unlock the console type | Signed `XboxOne`/`XboxCoreOS` request with dummy attestation fields | Still `400`, empty body — the fields were the wrong branch's | Locally tested |
 | 12a | The console branch is a distinct wire shape | Five fields, `TokenType: SP_JWT`, no `Signature` header, SP-minted attestation | `200` + XCOS with real material; `400` with synthetic blobs at the same 2,963 bytes | Community measured (2026-11-21) |
+| 12b | Device type is matched per model | `device.auth` `XboxOne` on an original Xbox One with a 1,208-char attestation | `200`, XCOS 3,196 chars | Community measured (2026-11-22) |
 | 13 | Device class reaches the session token | XSTS with `DeviceToken`, then GSSV login | `gsToken.devicetype` matches the device token | Locally tested |
 
 ## Windows surfaces

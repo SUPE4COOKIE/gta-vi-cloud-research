@@ -99,6 +99,12 @@ Endpoint: `POST https://xsts.auth.xboxlive.com/xsts/authorize`
 Passing a device token as a member of `UserTokens` fails; it must be
 `Properties.DeviceToken` (observed `400` vs `200`).
 
+**Console signature header** (community measured, 2026-11-22): console `xsts/authorize` POSTs
+carry a 76-byte header — 4-byte big-endian policy version, 8-byte big-endian FILETIME, and a
+64-byte raw ECDSA P-256 signature (`r||s`) over the body. A replay inside the freshness window
+returns `200`; a stale replay returns `403`. The signature is body-bound, so a stolen XSTS token
+alone is not enough.
+
 ## 3. GSSV login
 
 Endpoint: `POST https://<offering>.gssv-play-prod.xboxlive.com/v2/login/user`

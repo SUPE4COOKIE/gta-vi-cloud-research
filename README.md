@@ -83,7 +83,7 @@ XSTS with a <code>Win32</code> device token produces <code>gsToken.devicetype = 
 </tr>
 <tr>
 <td><b>Console types need a matching hardware attestation.</b><br>
-The console branch is five fields, <code>TokenType: SP_JWT</code>, no <code>Signature</code> header. With a real attestation <code>Scarlett</code> → <code>200</code> (XCOS); the same attestation with <code>XboxOne</code> declared → <code>400</code>. XCOS is an intermediate: XSTS rejects it, and only the locally converted JWE is evaluated.</td>
+The console branch is five fields, <code>TokenType: SP_JWT</code>, no <code>Signature</code> header. With a real attestation <code>Scarlett</code> → <code>200</code> (XCOS); the same attestation with <code>XboxOne</code> declared → <code>400</code>. The match is per model: an original Xbox One returns <code>200</code> for <code>XboxOne</code> with its own 1,208-char attestation. XCOS is an intermediate: XSTS rejects it, and only the locally converted JWE is evaluated.</td>
 <td>Console capture (2026-11-21)</td>
 </tr>
 <tr>

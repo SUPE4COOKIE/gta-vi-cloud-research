@@ -4,6 +4,14 @@ All notable changes to this repository. Dates are local to the investigation.
 
 ## Unreleased
 
+### Added
+- Cross-generation check: an original Xbox One returns `200` for `DeviceType: XboxOne` with its
+  own 1,208-char attestation (XCOS 3,196 chars). The type match is per model, not "Scarlett only".
+- Console XSTS POSTs carry a 76-byte body-bound signature (policy version, FILETIME, raw
+  P-256 `r||s`); a fresh replay returns `200`, a stale one `403`.
+- `dnet` endpoints and the `XDKS.1` sandbox from a retail account are closed:
+  `0x8015DC23` / `0x8015DC12`.
+
 ### Fixed
 - Split the console gate into two walls. **XCOS is not a credential**: XSTS refuses it in every
   combination (`400`). The console converts it to a **JWE** locally via
