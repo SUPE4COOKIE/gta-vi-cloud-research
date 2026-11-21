@@ -1,58 +1,37 @@
 # Roadmap
 
-What this project needs is evidence, not more ideas. This page lists the unknowns and the
-artifacts that would settle them. Full detail: [docs/roadmap.md](docs/roadmap.md) ·
-Ranked wishlist: [docs/what-we-need.md](docs/what-we-need.md).
+What this project needs is evidence, not more ideas. The full unknown map, evidence table and
+per-route breakdown live in [docs/roadmap.md](docs/roadmap.md); the ranked wishlist is
+[docs/what-we-need.md](docs/what-we-need.md).
 
 ## Status
 
 | Track | State |
 |---|---|
 | Research understanding | ~47% (subjective) |
-| Working console impersonation | 0% |
+| Console impersonation | 0% |
 | GTA VI on PC via cloud | Not achieved |
 
-## Unknowns
+## The short version
 
-| ID | Question | Blocked by |
-|---|---|---|
-| U1 | What does the backend actually validate for a console identity? | Console observation |
-| U2 | Is a genuine attestation sufficient by itself? | Console observation |
-| U3 | Must a console record also be registered to the account? | Console file access |
-| U4 | Where does the Windows RPS device token go downstream? | Interactive sign-in |
-| U5 | Is catalogue filtering per account, per offering or global? | Time and a second account |
-| U6 | Can a real Samsung TV start KI 2 Classic? | TV hardware |
+- The gate is a console identity minted by the security processor, then accepted by XSTS for
+  RETAIL. A Dev Mode console can mint one; RETAIL still rejects it with `0x8015DC19`.
+- A PC cannot produce that identity. No request shape, header or client string has moved it.
+- The routes left are a retail-mode console token or a glitched fat Xbox One, and neither has
+  been demonstrated end to end.
 
-## Highest-value evidence, in order
+## Top three asks
 
-1. **A console starting Killer Instinct 2 Classic** — validates the premise behind the whole
-   project. Minutes of work for anyone who owns the console and the title.
-2. **Dev-mode or devkit system-level trace** — whether `/device/authenticate` is visible, what
-   field names it carries, what status and claim categories come back.
-3. **Official Windows client signed in as an entitled account** — closes the PC-side chain.
-4. **Samsung TV run** — KI 2 Classic only; GTA VI does not allow `SAMSUNGTV`.
-5. **Catalogue scans over time and across accounts** — cheap, answers U5.
-
-## What each access route can and cannot do
-
-| Access | Gives | Does not give |
-|---|---|---|
-| Retail console in normal use | Whether a title starts | Traffic internals |
-| Retail console behind a proxy | Hosts and timing | Decrypted device-auth bodies |
-| Dev mode | App-level HTTP, some system logs | Guaranteed SystemOS auth visibility |
-| Devkit | Deeper tracing | Trust from the server |
-| Exploited console | Potentially SystemOS files and logs | Guaranteed keys or certificates |
-| Samsung TV | KI 2 Classic result | Anything for GTA VI |
-
-A console is a **measurement instrument**, not a source of reusable credentials. Captures are
-metadata-only by project policy.
+1. **A retail-mode console trace of sign-in and session start.** Dev Mode gave us the request
+   shape; the missing half is a token minted in the retail sandbox.
+2. **A console starting KI 2 Classic**, as an independent control for the allowlist.
+3. **Catalogue scans over time and across accounts**, to separate account quirks from service
+   behaviour.
 
 ## Not on the roadmap
 
-- Game assets and leaked executables — they do not touch device trust.
-  See [docs/game-executables.md](docs/game-executables.md).
-- Another header or device-string sweep.
-- Buying hardware solely to re-test a mapped gate.
+Game assets, leaked executables, another header sweep, and hardware bought only to re-test a
+mapped gate. See [docs/game-executables.md](docs/game-executables.md).
 
 ## Done means
 

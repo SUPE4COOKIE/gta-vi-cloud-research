@@ -17,27 +17,33 @@ That is evidence, not proof. The replay test is what settles it.
 
 ## Protocol A — capture a console device token and replay from PC
 
-**Tester needs:** a **devkit**, not a retail console in Dev Mode. Static analysis of the console
-client shows the app never calls `device.auth` or XSTS: it asks the OS `AuthManager` service for a
-token. The service, not the app, performs device authentication. An app-level proxy therefore
-cannot see the request.
+**Tester needs:** a **devkit**, or a retail console in Dev Mode with a trusted root CA. The app
+never calls `device.auth` itself — it asks the OS `AuthManager` service — so an app-level proxy
+sees nothing. But system-level TLS interception does: a Dev Mode console with a CA installed
+captured `device.auth`, XSTS and title traffic on 2026-11-21.
+
+What Dev Mode cannot do is produce a token RETAIL accepts. It mints a console-class XCOS token,
+and `xsts/authorize` for RETAIL returns `401` / `0x8015DC19`. Use Dev Mode to learn the shape;
+the replay half needs a retail boot.
 
 The devkit path exists in `XblAuthConsoleExt.dll` (`XblaCopyProxyAndCertFilesFromUSB`), which loads
 proxy settings and certificates from `s:\microsoft\cert\*.cer`, including a `FiddlerRoot.cer`
-literal. That is the sanctioned capture route and it is devkit-only.
+literal. That is the sanctioned capture route, and it is reachable in Dev Mode without XMAT.
 
 Verify capture coverage with an ordinary request before trusting any absence. A Windows PC runs
 XMAT.
 
-1. Enable dev mode, install XMAT on the PC, point the console at the PC proxy.
+1. Enable Dev Mode. Either install XMAT and point the console at the PC proxy, or install the CA
+   in `s:\microsoft\cert\` and redirect the auth hosts at the gateway.
 2. **Capture around sign-in or reboot, not only around launch.** A console owner's DNS logs
    during a launch showed delivery and store hosts but no auth host, which suggests the device
    token is issued once at sign-in/boot and then cached. If the capture starts at launch, the
    interesting request may already have happened.
 3. Launch Killer Instinct 2 Classic from the console.
 4. In XMAT, look for `device.auth.xboxlive.com`.
-   - If it is not present, stop: the auth is below the app layer and dev mode cannot see it.
-     Record that, it is a result.
+   - If it is not present, check that the CA is trusted and the redirect covers
+     `device.auth.xboxlive.com` before concluding anything. Dev Mode does show this request when
+     interception works.
 5. If present, note:
    - HTTP status,
    - request field names (no values),

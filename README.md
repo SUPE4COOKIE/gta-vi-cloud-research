@@ -82,14 +82,14 @@ XSTS with a <code>Win32</code> device token produces <code>gsToken.devicetype = 
 <td>Locally tested</td>
 </tr>
 <tr>
-<td><b>Console device types are refused at the issuer.</b><br>
-<code>Win32</code>, <code>Android</code>, <code>iOS</code> → <code>200</code>. <code>XboxOne</code>, <code>Scarlett</code>, <code>SAMSUNGTV</code>, <code>Durango</code> and 20+ others → <code>400</code> with an empty body.</td>
-<td>Locally tested</td>
+<td><b>Console types need a matching hardware attestation.</b><br>
+The console branch is five fields, <code>TokenType: SP_JWT</code>, no <code>Signature</code> header. With a real attestation <code>Scarlett</code> → <code>200</code> (XCOS); the same attestation with <code>XboxOne</code> declared → <code>400</code>.</td>
+<td>Console capture (2026-11-21)</td>
 </tr>
 <tr>
 <td><b>Console requests carry hardware-backed material.</b><br>
-<code>XblAuthManager.dll</code> serialises <code>Attestation</code>, <code>Certificate</code>, <code>BootLog</code>/<code>PcrAttestation</code>, <code>DeviceType</code>, <code>SP_JWT</code>, <code>EffectiveRegion</code>.</td>
-<td>Verified (static analysis)</td>
+The wire request is five fields — <code>Attestation</code> (744 B), <code>BootLog</code> (320 B), <code>Certificate</code> (1,024 B), <code>DeviceType</code>, <code>EffectiveRegion</code> — minted per boot by the security processor.</td>
+<td>Console capture (2026-11-21)</td>
 </tr>
 <tr>
 <td><b>The console provider does not exist on desktop Windows.</b><br>
@@ -102,13 +102,13 @@ A WinHTTP capture attributed an RPS <code>POST /device/authenticate</code> to <c
 <td>Locally tested</td>
 </tr>
 <tr>
-<td><b>Supplying console fields does not change the refusal.</b><br>
-Adding <code>Attestation</code>, <code>Certificate</code>, <code>BootLog</code>, <code>SP_JWT</code>, <code>EffectiveRegion</code> to an <code>XboxOne</code> request still returns <code>400</code>.</td>
-<td>Locally tested</td>
+<td><b>Desktop fields break the console request.</b><br>
+Adding <code>Nonce</code>, <code>SP_JWT</code>, <code>AuthMethod</code> or <code>ProofKey</code> to the console body turns its <code>200</code> into <code>400</code>.</td>
+<td>Console capture (2026-11-21)</td>
 </tr>
 <tr>
 <td><b>Catalogue gating is per offering, not per device token.</b><br>
-The <code>xgpuconsole</code> catalogue returns the same 2,865 titles with or without a <code>Win32</code> device token; <code>xgpuweb</code> no longer lists the console-only titles at all.</td>
+The <code>xgpuconsole</code> catalogue returns the same ≈2,865 titles (2026-11-20) with or without a <code>Win32</code> device token; <code>xgpuweb</code> no longer lists the console-only titles at all.</td>
 <td>Locally tested</td>
 </tr>
 </table>
@@ -125,7 +125,7 @@ flowchart TD
     F -->|Win32 on restricted title| G[400 DeviceTypeNotAllowed]
     F -->|permitted class| H[202 sessionPath]
 
-    I[Console path] -.->|Attestation / Certificate / BootLog / PCR / SP token| B
+    I[Console path] -.->|Attestation / Certificate / BootLog / DeviceType / Region| B
     I -.->|Xbla* console API set| J[Security processor]
     J -.->|not present on PC| K[Empty API-set host]
 
@@ -134,9 +134,9 @@ flowchart TD
     style K fill:#231a11,stroke:#7a5a1e,color:#ffd28a
 ```
 
-Solid arrows are **measured** token propagation. The final allowlist comparison is **inferred**,
-not observed: no console-side acceptance has been captured, and `SP_JWT` is initialised empty on
-the inspected builder path.
+Solid arrows are **measured** token propagation. The allowlist comparison is inferred from
+catalogue records and PC session results. The console-side acceptance we now have is at
+`device.auth` — a `200` XCOS token — not at session start.
 
 Detailed walkthrough: [Authentication flow](docs/authentication-flow.md) · [XSTS and GSSV](docs/xsts-and-gssv.md) · [Console attestation](docs/console-attestation.md)
 
@@ -203,9 +203,9 @@ open questions, ranked by value per effort:
 | Evidence | What it settles | Access needed |
 |---|---|---|
 | A console starting Killer Instinct 2 Classic | Whether the allowlist reflects real behaviour | Any Xbox with the title |
-| Devkit or retail-mode trace (Dev Mode mints a token but RETAIL refuses it) | What the backend actually accepts | Development console + proxy/cert tooling |
+| Retail-mode trace (Dev Mode mints a token but RETAIL refuses it) | What the backend actually accepts | Console booted to retail + gateway redirect |
 | Official Windows client, signed in | Where the RPS device token goes | Interactive sign-in |
-| Samsung TV run | KI 2 Classic only, not GTA VI | A TV |
+| Samsung TV run | KI 2 Classic only; one report says it fails | A TV |
 | Catalogue scans over time | Whether filtering is per account, per offering or global | None |
 
 Full evidence table: [What we need](docs/what-we-need.md) · Dependency map: [Roadmap](docs/roadmap.md)

@@ -17,8 +17,12 @@ Fields, with the mode that includes them:
 | `PcrAttestation` | no | no | yes | TPM/PCR measurements |
 | `DeviceType` | `XboxOne` | `Scarlett` | `XboxCoreOS` | literal |
 | `BootLog` | yes | yes | no | console boot log |
-| `SP_JWT` | yes | yes | yes | serialised placeholder in this path |
+| `SP_JWT` | placeholder | placeholder | placeholder | not present on the wire (2026-11-21 capture) |
 | `EffectiveRegion` | yes | yes | yes | `China` / `None` |
+
+The 2026-11-21 wire capture shows only five fields outbound: `Attestation`, `BootLog`,
+`Certificate`, `DeviceType`, `EffectiveRegion`. This table describes the builder's field set
+across modes, not the final request.
 
 ## Producer → context → field
 
@@ -199,16 +203,15 @@ keys and the attestation live below the OS.
 
 ## What remains unknown
 
-- The exact validation rule. Nobody in this project has observed the server accepting or
-  rejecting a genuine console attestation.
-- Whether attestation is sufficient, or whether the server also requires a console record
-  registered to the account.
-- How `EffectiveRegion` and `SP_JWT` influence the decision.
+- The verifier's exact rule. We know a hardware-minted attestation is accepted and the same
+  bytes with a different declared type are not; what it checks beyond that is unknown.
+- Whether a retail-mode token is accepted at XSTS, or whether the sandbox is checked separately.
+- How `EffectiveRegion` influences the decision.
 
 ## Why dummy fields fail
 
-Sending `XboxOne` with filler `Attestation`, `Certificate`, `BootLog`, `SP_JWT` and
-`EffectiveRegion` still returns `400` with an empty body. Whatever the server checks, it is
-not satisfied by field presence or shape.
+Two separate reasons. The attestation is validated, so random bytes fail. And the extra fields
+are not part of the console branch at all — adding them turns an otherwise valid request into
+`400`.
 
 See [reverse-engineering.md](reverse-engineering.md) for addresses and corrections.

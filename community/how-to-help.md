@@ -30,9 +30,10 @@ which are speculation.
 
 ### 4. Authorised console observation
 
-If you own a console with developer mode, determine whether system-level
-`/device/authenticate` traffic is visible through console network tooling. Record **field
-names, certificate metadata categories, status codes** — never tokens or keys.
+Dev Mode with a trusted CA already shows system-level `/device/authenticate` traffic. What is
+still open is the **retail boot**: whether a token minted there is accepted by XSTS. If you can
+observe a retail console from outside — hosts, sizes, status codes — that is the missing half.
+Record field names and status codes, never tokens or keys.
 
 ### 5. Samsung TV validation
 

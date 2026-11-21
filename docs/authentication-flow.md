@@ -120,7 +120,7 @@ Endpoint: `POST /v5/sessions/cloud/play` on the region base URI.
 | Case | Result |
 |---|---|
 | KI 2013, ordinary PC identity | `202` with `sessionPath` and `queueConfig` |
-| KI 2 Classic, ordinary PC identity | `400` `{"code":"DeviceTypeNotAllowed"}` (2026-11-19; since 2026-11-20 the same request returns `500`) |
+| KI 2 Classic, ordinary PC identity | `400` `{"code":"DeviceTypeNotAllowed"}` (2026-11-19, reproduced 2026-11-21; the `500` on 2026-11-20 was a missing `X-MS-Device-Info` header) |
 
 The refusal arrives in roughly 400 ms, before queue or instance allocation, and contains no
 `sessionPath`.

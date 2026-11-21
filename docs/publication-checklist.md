@@ -1,6 +1,6 @@
 # Publication checklist
 
-Manual steps before this folder becomes a public repository. Do not skip the scans.
+Run this before publishing a change or a release. Do not skip the scans.
 
 ## Identity and links
 
@@ -44,7 +44,7 @@ Manual steps before this folder becomes a public repository. Do not skip the sca
 
 ## Final
 
-- [ ] `git init` is **not** run by the research tooling; the maintainer decides.
+- [x] `git init` is **not** run by the research tooling; the maintainer decides.
 - [x] Remote configured by the maintainer (`origin` → published repository).
-- [ ] The private folder (`../gta-vi-cloud-research-private/`) is outside this directory.
+- [x] The private folder (`../gta-vi-cloud-research-private/`) is outside this directory.
 - [ ] The maintainer has read `SECURITY.md` and agrees with the disclosure process.

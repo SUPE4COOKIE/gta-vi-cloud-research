@@ -7,12 +7,12 @@ try" but "what artifact would settle which unknown".
 
 | ID | Unknown | Current state |
 |---|---|---|
-| U1 | What the backend actually validates for a console identity | Unknown |
-| U2 | Whether a genuine attestation is sufficient by itself | Untested |
+| U1 | What the backend actually validates for a console identity | Partially answered: attestation must match the declared type; XSTS adds a sandbox check |
+| U2 | Whether a genuine attestation is sufficient by itself | Partially: accepted at `device.auth`, rejected at RETAIL XSTS from Dev Mode |
 | U3 | Whether a console record must also be registered to the account | Untested |
 | U4 | Whether the Windows RPS device token reaches XSTS/GSSV, and with what class | Unobserved |
 | U5 | Whether catalogue filtering is per-account, per-offering or global | Partially mapped |
-| U6 | Whether a real Samsung TV can start KI 2 Classic | Untested |
+| U6 | Whether a real Samsung TV can start KI 2 Classic | Reported unsuccessful; details pending |
 
 ## What unlocks what
 
@@ -32,9 +32,9 @@ flowchart LR
 
 | Evidence | Answers | How to obtain | Effort | Held? |
 |---|---|---|---|---|
-| Console `/device/authenticate` request/response metadata (field names, status, claim categories) | U1, U2 | **Dev Mode console** can install a trusted root CA and capture TLS, and does mint console-class tokens — but XSTS for RETAIL rejects them (`0x8015DC19`). A retail-mode console or devkit is still the only route | High | No |
+| Console `/device/authenticate` request/response metadata (field names, status, claim categories) | U1, U2 | **Dev Mode console** with a trusted root CA — captured 2026-11-21 | High | **Yes** (community) |
 | Console SystemOS binaries, logs, certificate metadata | U2, U3 | Dev-mode file access; a working exploit may go further | High | Partially public |
-| A real console starting KI 2 Classic | Premise | Any Xbox with entitlement to the title | Low, if hardware exists | No |
+| A real console starting KI 2 Classic | Premise | Any Xbox with entitlement to the title | Low, if hardware exists | Community reported |
 | Official Windows client GSSV token at sign-in | U4 | Sign in as the entitled account; record status and claim categories only | Medium | No |
 | Catalogue scans across days and accounts | U5 | Existing read-only tooling | Low | Partially |
 | Samsung TV run of KI 2 Classic | U6 | A TV owner | Low, if hardware exists | No |
@@ -44,10 +44,8 @@ flowchart LR
 
 1. **A console you already own starting KI 2 Classic.** Cheapest possible check of whether the
    allowlist reflects reality. Requires no tracing, no keys, no exploits.
-2. **Devkit with system-level tracing.** The realistic path to U1/U2 — note the console app never
-   calls device auth itself, and XMAT documents a development console requirement:
-   does the console expose `/device/authenticate`, what does it carry, and what does the
-   server return.
+2. **Retail-mode tracing.** Dev Mode already answered what `/device/authenticate` carries and
+   returns. The open half is a token minted in the retail sandbox, and whether XSTS accepts it.
 3. **Official Windows client sign-in as the entitled account.** Closes U4 and costs only an
    interactive login. It cannot produce a console class, but it removes the last unobserved
    step on the PC side.
@@ -60,8 +58,8 @@ flowchart LR
 | Access | Can observe | Cannot do |
 |---|---|---|
 | Retail console, normal use | Whether a title starts; timings; user-facing errors | System-level traffic internals |
-| Retail console + network proxy | Connection pattern (hosts, timing); TLS payload remains encrypted | Read the device-auth body |
-| Dev mode | App-level HTTP only — the console client never calls device auth, so this cannot see it | SystemOS auth visibility |
+| Retail console + network proxy | Hosts and timing; the CA is rejected, so payloads stay encrypted | Read the device-auth body |
+| Dev mode | System auth with a trusted CA — `device.auth`, XSTS and title calls are readable | A retail-sandbox token |
 | Devkit | Deeper tracing than retail dev mode | Make the server trust a non-console |
 | Exploited console | Potentially SystemOS files, logs and binaries; 2026 glitch reports key dumps | Guaranteed server acceptance of a cloned identity |
 | Samsung TV | Whether the TV starts KI 2 Classic | Anything for GTA VI |

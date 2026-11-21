@@ -22,7 +22,7 @@ appeared later with a console-only allowlist of the same shape.
 Same account, same client, back to back:
 
 - KI 2013 → `202 Accepted`, `sessionPath` + `queueConfig`
-- KI 2 Classic → `400`, `{"code":"DeviceTypeNotAllowed"}` (historical; now `500`)
+- KI 2 Classic → `400`, `{"code":"DeviceTypeNotAllowed"}` (reproduced 2026-11-21)
 
 Entitlement, region, headers and client version are identical. The only difference is the
 title's allowlist. That is why entitlement is not the explanation for the refusal.
@@ -48,7 +48,7 @@ over an account or entitlement explanation.
 |---|---|---|
 | **Catalogue visibility** | Is the title listed for this offering? | `xgpuweb` listed it on 2026-11-19, not on 2026-11-20 |
 | **Entitlement** | Does the account hold the licence? | `hasEntitlement: true` for KI 2 Classic |
-| **Session authorisation** | May this device class start it? | `400 DeviceTypeNotAllowed` on PC (2026-11-19); `500` since 2026-11-20 |
+| **Session authorisation** | May this device class start it? | `400 DeviceTypeNotAllowed` on PC (2026-11-19, reproduced 2026-11-21) |
 | **Gameplay** | Did a stream actually start? | Not reached |
 
 A store page, a game card, or a catalogue row is not evidence of the last two.

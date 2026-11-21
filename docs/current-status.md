@@ -1,6 +1,6 @@
 # Current status
 
-**Snapshot:** 2026-11-20. Service behaviour changes without notice.
+**Snapshot:** 2026-11-21. Service behaviour changes without notice.
 
 ## Headline
 
@@ -19,7 +19,7 @@ a test metric and should not be read as "47% of a bypass".
 | Claim | Level |
 |---|---|
 | Device allowlists exist per title and are enforced at session start | Locally tested |
-| KI 2013 starts (`202`) while KI 2 Classic was refused (`400 DeviceTypeNotAllowed`) on the same account — historical, now `500` | Locally tested (2026-11-19) |
+| KI 2013 starts (`202`) while KI 2 Classic is refused (`400 DeviceTypeNotAllowed`) on the same account | Locally tested (reproduced 2026-11-21) |
 | Device class travels from the device token into the GSSV session claim | Locally tested |
 | `device.auth` has separate desktop and console shapes; the console shape needs SP-minted attestation and returns an XCOS token | Locally tested + console capture (2026-11-21) |
 | PoP signatures for console-type requests on the desktop branch were structurally valid — the wrong branch, see below | Locally tested (offline verification) |
@@ -59,7 +59,10 @@ Anything less is progress, not success.
   probe account; see [xbox-app-investigation.md](xbox-app-investigation.md). This explains
   earlier "missing Play button" confusion and is not a device-identity result.
 
-## Community reports not yet reproduced here
+## Community reports and observations
+
+Each item carries its own status. Nothing here becomes a project result until it is reproduced
+or independently measured.
 
 - An Xbox owner reports KI 2 Classic reaching the "Launching with cloud gaming" screen on a
   real console (2026-11-20). **Gameplay and console model are still unconfirmed** — the

@@ -22,9 +22,9 @@ Start here if you want the full picture rather than the summary.
 **You want to reproduce or extend the work**
 1. [What we need](what-we-need.md)
 2. [Methodology and evidence levels](methodology.md)
-2. [Experiments](experiments.md)
-3. [Failed approaches](failed-approaches.md)
-4. [Open questions](open-questions.md)
+3. [Experiments](experiments.md)
+4. [Failed approaches](failed-approaches.md)
+5. [Open questions](open-questions.md)
 
 ## All documents
 
@@ -49,6 +49,7 @@ Start here if you want the full picture rather than the summary.
 | [roadmap.md](roadmap.md) | Unknowns, dependency map, what unlocks what |
 | [game-executables.md](game-executables.md) | Assets, executables and why they do not solve cloud access |
 | [references.md](references.md) | Public sources and third-party projects |
+| [publication-checklist.md](publication-checklist.md) | Scans and checks before publishing |
 
 ## Conventions
 
