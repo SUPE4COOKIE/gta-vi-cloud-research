@@ -87,7 +87,9 @@ A retail Series S in Dev Mode mints a `Scarlett` token successfully (`device.aut
 what XSTS evaluates, and for RETAIL it returns `401` / XErr `2148916249` (`0x8015DC19`).
 
 The console branch itself is fully mapped: five fields, `TokenType: SP_JWT`, no `Signature` header,
-SP-minted attestation that must match the declared type.
+SP-minted attestation that must match the declared type. The documented `ddm` (debug mode) and
+`sbx` (sandbox) claims are the most plausible inputs for the rejection; both are set by the boot
+and the console's registration, not by the request.
 
 Three candidate causes, in order of likelihood:
 

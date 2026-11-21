@@ -135,6 +135,19 @@ retail unit in Dev Mode.
 layer, so the request never reaches GSSV. A dev-console identity does not imply access to the
 dev sandbox under a retail account.
 
+## 14. Same-console A/B: native cloud vs Edge
+
+**Proposed:** run GTA VI on the same Xbox, same account, once through the native cloud app and
+once in Edge at `xbox.com/play`, to separate hardware identity from client authentication.
+
+**Why it does not answer the device question:** the web client uses `xgpuweb`, which does not list
+GTA VI at all. The Edge attempt fails when the catalogue is built, before any device check. The
+comparison is "native console, which works" vs "a catalogue that does not contain the title".
+
+**What would answer it:** a second client on the same console that is not the retail app — for
+example a sideloaded client in Dev Mode. But Dev Mode cannot launch retail apps, and its token is
+refused at XSTS, so that pair cannot be constructed either.
+
 ## What is *not* on this list
 
 - A real console capture — done at metadata level (2026-11-22); payloads stay unreadable on retail.

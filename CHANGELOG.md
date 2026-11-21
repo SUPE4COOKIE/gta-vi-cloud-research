@@ -5,6 +5,13 @@ All notable changes to this repository. Dates are local to the investigation.
 ## Unreleased
 
 ### Added
+- Clarified the device claims: `dty` is environment-shaped (a Series can present `XboxOne` for
+  BC titles) while `ddm` / `sbx` are the likely inputs behind `0x8015DC19`, both boot-set and not
+  client-selectable.
+- Closed the same-console native-vs-Edge A/B: the web offering does not list GTA VI, so it fails
+  at catalogue build time, not at a device check.
+
+### Added
 - Cross-generation check: an original Xbox One returns `200` for `DeviceType: XboxOne` with its
   own 1,208-char attestation (XCOS 3,196 chars). The type match is per model, not "Scarlett only".
 - Console XSTS POSTs carry a 76-byte body-bound signature (policy version, FILETIME, raw

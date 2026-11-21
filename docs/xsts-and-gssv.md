@@ -72,8 +72,18 @@ class is not a header, not a query parameter, and not configurable in the sessio
 
 Microsoft's token documentation also describes device capability (`dca`), debug mode (`ddm`),
 pairwise identity (`dpi`), title identity (`xti`) and sandbox (`sbx`) claims. Our model focuses
-on `dty`, but these are candidates for additional server-side inputs and have not been compared
-between authenticated `Win32` and official Windows clients.
+on `dty`, but these are candidates for additional server-side inputs.
+
+Two of them matter for the Dev Mode rejection:
+
+- **`ddm` / `sbx` are the most plausible inputs behind `0x8015DC19`.** Both are set by the
+  console's boot and its registration, not by anything in the request. A client cannot ask for
+  `ddm: Retail`; there is no field for it.
+- **`dty` behaves as an environment as well as a hardware class.** A Series console can present
+  `XboxOne` for backwards-compatible titles; that is why a Series' `Scarlett` attestation is
+  accepted only with `Scarlett` declared, while an original Xbox One is accepted as `XboxOne`.
+
+Neither is client-selectable, which is why the class cannot be chosen by changing a string.
 
 ## Offerings
 
