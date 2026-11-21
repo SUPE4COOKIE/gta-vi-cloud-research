@@ -85,6 +85,9 @@ Anything less is progress, not success.
   without SNI. First console-side evidence that XSTS and GSSV are contacted during a launch.
 - A Polish creator (RetroGaming) played **GTA VI on a PS3 via GR33N / DeepPlay on 2026-11-19**
   (2.5-hour stream, primary source reviewed — see below). He says access is now blocked.
+- A news article (gamegpu, 2026-11-21) claims GTA VI runs on a hacked Switch via the `green-nx`
+  client. Checked against the source and the catalogue: the client logs into `xgpuweb` and sends
+  no device token, and `xgpuweb` does not list GTA VI. **Contradicted**, not just unverified.
 - The 2026 Xbox One boot ROM glitch is reported to yield key dumps and SystemOS decryption.
   Not reproduced, not requested, and not required for any test we can run today.
 

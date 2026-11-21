@@ -29,6 +29,10 @@ All notable changes to this repository. Dates are local to the investigation.
   "capture the play call in Dev Mode" idea.
 
 ### Added
+- Checked the Switch claim: `green-nx` logs into `xgpuweb`, which does not list GTA VI (2,864
+  titles, absent), and sends no device token. The article is contradicted by the catalogue.
+
+### Added
 - Console-side full-TLS capture: a one-field control (`Win32` 200 vs `Xbox` 400 empty, 425/426 B)
   confirms the class gate is not a schema problem, and a real-attestation `Scarlett` request
   returns a console-class JWE. Corrected the over-broad claim that console types are refused at

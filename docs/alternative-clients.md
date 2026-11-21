@@ -79,6 +79,22 @@ So the honest summary is: one working window, no reproduced method. Which device
 client presented, and whether the title's allowlist was simply not enforced that day, is unknown.
 Neither explanation implies a console-class token was obtained.
 
+## green-nx (Nintendo Switch)
+
+A Switch homebrew xCloud client (GPL-3.0, `rmrf404/green-nx`). A news article on 2026-11-21
+claimed GTA VI runs on it.
+
+What the source actually does:
+
+- device-code sign-in, then XSTS for `http://gssv.xboxlive.com/`
+- logs into **`xgpuweb`** and `xgpuwebf2p` — never `xgpuconsole`
+- sends no device token and no `DeviceType`
+
+Measured 2026-11-21: `xgpuweb` returns 2,864 titles with GTA VI **absent**; `xgpuconsole` returns
+2,866 and includes it. So this client cannot list the title, let alone start a session for it. The
+claim most likely comes from its catalogue search, which deliberately shows unavailable titles with
+a flag explaining what they need.
+
 ## Bannerlator
 
 Android client with a cloud-token patch. Inspected behaviour:
