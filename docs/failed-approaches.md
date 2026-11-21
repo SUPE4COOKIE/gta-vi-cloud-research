@@ -24,8 +24,10 @@ are not the lever.
 
 **Result:** `400` with an empty body; `Win32`/`Android`/`iOS` return `200`.
 
-**Why it fails:** the issuer does not hand out console classes to unauthenticated clients.
-Signature validity was checked separately, so this is not a malformed request.
+**Why it fails:** without attestation the issuer has nothing to match the declared class against.
+Signature validity was checked separately, so this is not a malformed request. **Refined
+2026-11-21:** the console endpoint is a separate five-field branch, and a matching attestation does
+return `200` — see [console attestation](console-attestation.md).
 
 ## 3. Adding console fields to a console request
 
@@ -34,9 +36,9 @@ Signature validity was checked separately, so this is not a malformed request.
 
 **Result:** still `400`, same empty body.
 
-**Why it fails:** the server is not satisfied by field presence. The hardware-attestation
-explanation is **inferred**, not proven: these tests show that filler fields are rejected, not
-what a genuine attestation would need to contain.
+**Why it fails:** the console branch takes exactly five fields and no signature; the extra desktop
+fields make an otherwise valid request fail. **Confirmed 2026-11-21** by ablation with a real
+attestation: adding `Nonce`, `SP_JWT`, or `AuthMethod`/`ProofKey` turns `200` into `400`.
 
 ## 4. Using the PC-app offering
 

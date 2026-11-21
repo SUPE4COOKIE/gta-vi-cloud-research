@@ -20,10 +20,11 @@ recorded the result; values that would be credentials are never included.
 
 | # | Hypothesis | Method | Result | Level |
 |---|---|---|---|---|
-| 9 | `device.auth` issues console classes | PoP request per device type | `Win32`/`Android`/`iOS` → 200; 20+ console types → 400 empty | Locally tested |
+| 9 | `device.auth` issues console classes | PoP request per device type | `Win32`/`Android`/`iOS` → 200; 20+ console types → 400 empty. **Superseded**: the console endpoint is a different shape (#12a) | Locally tested |
 | 10 | The 400 is a signing bug | Verify fresh Win32 and XboxOne requests offline against the public spec | Both signatures valid | Locally tested |
 | 11 | One request, one chance — `Durango` | Single fresh-key probe | `400`, empty body | Locally tested |
-| 12 | Console fields unlock the console type | Signed `XboxOne`/`XboxCoreOS` request with dummy attestation fields | Still `400`, empty body | Locally tested |
+| 12 | Console fields unlock the console type | Signed `XboxOne`/`XboxCoreOS` request with dummy attestation fields | Still `400`, empty body — the fields were the wrong branch's | Locally tested |
+| 12a | The console branch is a distinct wire shape | Five fields, `TokenType: SP_JWT`, no `Signature` header, SP-minted attestation | `200` + XCOS with real material; `400` with synthetic blobs at the same 2,963 bytes | Community measured (2026-11-21) |
 | 13 | Device class reaches the session token | XSTS with `DeviceToken`, then GSSV login | `gsToken.devicetype` matches the device token | Locally tested |
 
 ## Windows surfaces

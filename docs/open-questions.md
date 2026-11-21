@@ -82,8 +82,9 @@ report `400` when they try.
 ## Q10. What does `0x8015DC19` on XSTS actually mean?
 
 A retail Series S in Dev Mode mints a `Scarlett` device token successfully (`device.auth` → `200`,
-JWE ~3.5 KB), then `xsts/authorize` for RETAIL returns `401` with XErr `2148916249`
-(`0x8015DC19`).
+**XCOS** token ~3.5 KB), then `xsts/authorize` for RETAIL returns `401` with XErr `2148916249`
+(`0x8015DC19`). The console branch itself is now fully mapped: five fields, `TokenType: SP_JWT`,
+no `Signature` header, SP-minted attestation that must match the declared type.
 
 Three candidate causes, in order of likelihood:
 

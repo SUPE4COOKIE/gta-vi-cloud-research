@@ -91,11 +91,15 @@ session-level tests need either a GTA VI entitlement or a console-side capture.
 | 41 | Console-shaped PoP body with dummy blobs, `Nonce` and a JWT-shaped `SP_JWT` | `400` empty; a community claim of `403` was **not reproduced** |
 | 42 | GTA VI from a PS3 client (GR33N / DeepPlay), 2026-11-19, stock apps, no device spoofing (community) | played ~2.5 h, then **blocked**; other users report `400` |
 | 43 | Console same-shape control: `Win32` (426 B) vs `Xbox` (425 B), only the type differs (community) | `200` vs `400` empty — **class gate confirmed, not schema** |
-| 44 | `device.auth` `Scarlett` + real attestation + `TokenType: SP_JWT` | `200`, console-class JWE 3,537–3,539 B |
+| 44 | Console branch: five fields, `TokenType: SP_JWT`, no `Signature` header, real SP attestation | `200`, **XCOS** token ~3.5 KB, request 2,963 B |
 | 45 | `xsts/authorize` for RETAIL with that Dev Mode token | `401`, XErr `2148916249` (`0x8015DC19`) |
 | 46 | Type-string control: `Win32`/`XboxOne`/`Xbox`/`Scarlett`/`Banana`, identical dummy body | `200` only for `Win32`; empty `400` for all others — class and invalid type look the same |
 | 47 | `Win32` + `SP_JWT`, and `Scarlett` + `JWT` | `400` — `TokenType` is checked with the type |
 | 48 | `SP_JWT` structural variants: our-key JWS, random signature, `alg:none` | `400` empty for all three — a well-formed signature is not enough without real material |
+| 49 | Five-field console body with synthetic blobs | `400` at the identical 2,963 bytes — size is not the check |
+| 50 | Same real attestation, `XboxOne` declared instead of `Scarlett` | `400` — type must match the attested class |
+| 51 | Ablation: five-field body + `Nonce`, or + `SP_JWT`, or + PoP fields | `400` each — extra desktop fields break the console branch |
+| 52 | Shared 7-field script (Nonce + SP_JWT + Signature) | `403` for **both** `Scarlett` and `XboxOne` — shape-dependent, not class-dependent |
 | 36 | Tampered `gsToken` signature | `401` |
 
 **Correction (2026-11-21):** the `500` was an **instrument failure** — a missing

@@ -152,11 +152,13 @@ This does not prove every software approach is impossible. It proves these metad
 </details>
 
 <details>
-<summary><b>device.auth device-type sweep — console classes rejected</b></summary>
+<summary><b>device.auth device-type sweep — 400 without attestation</b></summary>
 
 Proof-of-possession requests were signed with fresh P-256 keys. Offline verification confirmed the signature and wire format for both `Win32` and `XboxOne` requests, so the `400` is not a malformed-signature `401`.
 
 Accepted: `Win32`, `Android`, `iOS`. Rejected: `XboxOne`, `Xbox`, `Scarlett`, `XBOXONE`, `SCARLETT`, `SAMSUNGTV`, `Durango`, `XboxOneX`, `XboxSeriesS`, `XboxCoreOS`, and others.
+
+**Superseded (2026-11-21):** the console endpoint is a different branch — five fields, `TokenType: SP_JWT`, no `Signature` header, SP-minted attestation. With matching attestation `Scarlett` returns `200`. These 400s were missing material, not a class blocklist. See [console attestation](docs/console-attestation.md).
 
 </details>
 
@@ -164,6 +166,8 @@ Accepted: `Win32`, `Android`, `iOS`. Rejected: `XboxOne`, `Xbox`, `Scarlett`, `X
 <summary><b>Console request reconstruction — refused with and without attestation fields</b></summary>
 
 A signed `XboxOne` request carrying dummy `Attestation`, `Certificate`, `BootLog`, `SP_JWT` and `EffectiveRegion` returned `400` with an empty body, identical in shape to the request without them. Presence of the fields is not the gate.
+
+**Superseded (2026-11-21):** those fields are the *desktop* shape. The console branch takes exactly five fields and no signature, and rejects the extra ones. See [console attestation](docs/console-attestation.md).
 
 </details>
 

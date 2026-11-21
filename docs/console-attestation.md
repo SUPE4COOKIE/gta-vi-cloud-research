@@ -85,44 +85,64 @@ getters plus `XblaCopyProxyAndCertFilesFromUSB`, `XblaAllowUsbCertAndProxy`,
 keys are below it, not inside it. Extracting the DLLs does not yield an identity — but the
 devkit-only USB proxy/cert path is now confirmed as a real capture route.
 
-## Dev Mode, measured (community capture, 2026-11-21)
+## The two `device.auth` branches (settled 2026-11-21)
+
+A console-side capture plus a shared script settled what synthetic requests could not. There are
+two wire shapes, and they do not mix.
+
+| | Desktop | Console |
+|---|---|---|
+| Body | PoP fields (`AuthMethod`, `Id`, `ProofKey`, `Version`) | exactly `Attestation`, `BootLog`, `Certificate`, `DeviceType`, `EffectiveRegion` |
+| `TokenType` | `JWT` | `SP_JWT` |
+| `Signature` header | required | **absent** |
+| Material | self-signed `ProofKey` | SP-minted attestation for a fresh nonce |
+| Result | `200` for `Win32`/`iOS`/`Android`/`Nintendo` | `200`, **XCOS** token |
+
+The captured console request is 2,963 bytes and returns `200` with a ~3.5 KB XCOS token. It
+contains no `Nonce`, no `SP_JWT`, no `AuthMethod`, no `ProofKey`, and no `Signature` header.
+
+Ablation, same real attestation, only the field set changing:
+
+| Shape | Result |
+|---|---|
+| 5 fields | `200` |
+| + `Nonce` | `400` |
+| + `SP_JWT` (`TokenType: JWT`) | `400` |
+| + `AuthMethod`/`Id`/`Version`/`ProofKey` | `400` |
+| full 7-field shape | `400` |
+
+Every extra field the desktop branch needs **breaks** the console branch.
+
+Our replication: a synthetic 5-field body with random blobs is exactly 2,963 bytes and returns
+`400` — same size, different bytes. Size is not the check; the attestation is.
+
+Material, measured, all per boot:
+
+- `Attestation` — 744 bytes, minted by the security processor for a nonce from
+  `GET /device/nonce`. The nonce is baked in and never travels in the body.
+- `BootLog` — 320 bytes, `XblaGetSessionPublicKey`.
+- `Certificate` — 1,024 bytes, `XblaGetConsoleCert`, magic `CC`.
+- All three change after a reboot, so a capture cannot be replayed after one.
+
+**The 403 is not a class signal.** The shared 7-field script returns `403` for `Scarlett` and for
+`XboxOne` alike, and its `loadBlob()` re-encodes base64 text (`readFileSync(...).toString('base64')`),
+so even real blobs arrive double-encoded through that path.
+
+**The type must match the attestation.** Same attestation, same second: `Scarlett` → `200`,
+`XboxOne` → `400`. `DeviceType` is a claim the hardware has to back, not a switch.
+
+**Ceiling:** the `200` is an XCOS token, and `xsts/authorize` for RETAIL rejects it with
+`0x8015DC19` (Q10). The console path is reachable; a RETAIL session is not.
+
+## Dev Mode (measured)
 
 A retail Series S in Dev Mode, with a trusted CA installed, produced full-TLS captures of the
 sign-in path. The OS `AuthManager` service — not the app — performs device auth, so the
-app-level stub is irrelevant to what the network sees:
+app-level stub is irrelevant to what the network sees.
 
-| Request | Result |
-|---|---|
-| `device.auth`, `DeviceType: Win32`, `TokenType: JWT`, 426 B body | `200`, JWE ~1.7 KB |
-| `device.auth`, `DeviceType: Xbox`, same shape, 425 B body | `400`, **empty** |
-| `device.auth`, `DeviceType: Scarlett`, `TokenType: SP_JWT`, 2,963 B body | `200`, JWE 3,537–3,539 B |
-| `xsts/authorize` for **RETAIL** using that device token | `401`, XErr `2148916249` (`0x8015DC19`) |
-
-Rows 1–2 are a one-field control: same branch, 425 vs 426 bytes, only the type value differs.
-That settles the **schema** argument: the request shape is fine.
-
-It does **not** settle the class gate on its own. Repeating our dummy body with `Win32`,
-`XboxOne`, `Xbox`, `Scarlett` and `Banana` returns `200` only for `Win32` and an identical empty
-`400` for the rest — including the nonsense string. From a PC, "wrong class" and "invalid type"
-are indistinguishable. Only the console's `200` on real material separates them.
-
-`TokenType` is also part of the pair: `Win32` + `SP_JWT` returns `400`, and so does `Scarlett` +
-`JWT`. The verifier is reached only by `console type + SP_JWT`.
-
-Row 3 **corrects our earlier reading**. A console type is accepted when the request carries real
-attestation material and `TokenType: SP_JWT`. Filler blobs were never going to pass; the issuer
-checks the material, not the field names.
-
-Row 4 is the new wall: a token minted in the **Dev Mode sandbox** is refused by XSTS for RETAIL.
-Sandbox binding, device-record mismatch and freshness are all still possible explanations — see
-Q10 in `open-questions.md`.
-
-Two corrections to the earlier binary reading:
-
-- `XblaProcessChallenge` is E_NOTIMPL in the **app's copy** of `XblAuthConsoleExt.dll`. The
-  system service still performs the call successfully. "The arm cannot be exercised from a
-  dev-mode app" is right; "Dev Mode cannot mint a console token" is **wrong**.
-- `XblaSignDigest` remains a shim. No local signing primitive was found.
+`XblaProcessChallenge` is E_NOTIMPL in the **app's copy** of `XblAuthConsoleExt.dll`. The system
+service still performs the call. "The arm cannot be exercised from a dev-mode app" is right;
+"Dev Mode cannot mint a console token" is **wrong**. `XblaSignDigest` remains a shim.
 
 A useful side observation: the XSTS request grows by ~1.7 KB when a device token is included, so
 body size alone tells you whether a capture presented one.

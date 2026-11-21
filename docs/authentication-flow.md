@@ -7,7 +7,7 @@ field **values** are not.
 
 Endpoint: `POST https://device.auth.xboxlive.com/device/authenticate`
 
-Two request shapes were observed.
+Three request shapes were observed.
 
 **Client proof-of-possession (our synthetic client)**
 
@@ -29,6 +29,27 @@ Signed with the Xbox Live PoP scheme: a header of policy version, FILETIME and a
 P-1363 signature over the request, plus a `Signature` header and
 `x-xbl-contract-version: 2`.
 
+**Console (security-processor attestation)**
+
+```json
+{
+  "RelyingParty": "http://auth.xboxlive.com",
+  "TokenType": "SP_JWT",
+  "Properties": {
+    "Attestation": "<744 bytes, base64, minted for a fresh nonce>",
+    "BootLog": "<320 bytes, base64, session public key>",
+    "Certificate": "<1024 bytes, base64, console certificate, magic CC>",
+    "DeviceType": "Scarlett",
+    "EffectiveRegion": "None"
+  }
+}
+```
+
+No `Signature` header, no `x-xbl-contract-version`, and none of the desktop fields. The request is
+2,963 bytes and returns `200` with an **XCOS** token. The nonce comes from `GET /device/nonce` and
+is baked into the attestation by the security processor; it never travels in the body. Adding any
+desktop field turns that same request into `400`.
+
 **Windows system service (RPS)**
 
 ```text
@@ -47,8 +68,11 @@ Outcome:
 
 | Request | Status | Token |
 |---|---|---|
-| `Win32`, `Android`, `iOS` | `200` | issued |
-| console types | `400` | none, empty body |
+| desktop shape, `Win32`/`iOS`/`Android`/`Nintendo` | `200` | device token |
+| desktop shape, console type | `400` | none, empty body |
+| console shape, SP attestation matching the type | `200` | XCOS |
+| console shape, synthetic material | `400` | none |
+| console shape + desktop fields | `400`, or `403` with the shared script's set | none |
 
 ## 2. XSTS authorisation
 

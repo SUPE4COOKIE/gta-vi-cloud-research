@@ -21,9 +21,9 @@ a test metric and should not be read as "47% of a bypass".
 | Device allowlists exist per title and are enforced at session start | Locally tested |
 | KI 2013 starts (`202`) while KI 2 Classic was refused (`400 DeviceTypeNotAllowed`) on the same account — historical, now `500` | Locally tested (2026-11-19) |
 | Device class travels from the device token into the GSSV session claim | Locally tested |
-| `device.auth` issues `Win32`, `Android`, `iOS` and refuses console classes | Locally tested |
-| PoP signatures for console requests were structurally valid | Locally tested (offline verification of fresh requests) |
-| The console request builder serialises certificate, attestation, boot log/PCR, SP token | Verified (static) |
+| `device.auth` has separate desktop and console shapes; the console shape needs SP-minted attestation and returns an XCOS token | Locally tested + console capture (2026-11-21) |
+| PoP signatures for console-type requests on the desktop branch were structurally valid — the wrong branch, see below | Locally tested (offline verification) |
+| The console wire request carries certificate, attestation, boot log, type and region — no nonce or SP token | Console capture (2026-11-21) |
 | The console provider API set has no implementation host on desktop Windows | Verified (schema + binary) |
 | `gamingservices.exe` performs RPS device authentication over WinHTTP | Locally tested |
 | Windows device tokens are returned as JWE and not readable client-side | Locally tested |
@@ -88,38 +88,37 @@ Anything less is progress, not success.
 - The 2026 Xbox One boot ROM glitch is reported to yield key dumps and SystemOS decryption.
   Not reproduced, not requested, and not required for any test we can run today.
 
-## Console class control (2026-11-21)
+## `device.auth` console branch resolved (2026-11-21)
 
-A full-TLS capture from a retail Series S in Dev Mode gives the cleanest control so far, because
-the console itself generated both sides of it:
+Two wire shapes, not one. The desktop shape is PoP-signed and accepts `Win32`/`iOS`/`Android`/
+`Nintendo`. The console shape is **five fields, `TokenType: SP_JWT`, and no `Signature` header**:
 
-| Request | Result |
-|---|---|
-| `device.auth`, `Win32`, `JWT`, 426 B | `200`, JWE ~1.7 KB |
-| `device.auth`, `Xbox`, `JWT`, 425 B | `400`, empty |
-| `device.auth`, `Scarlett`, `SP_JWT`, 2,963 B | `200`, JWE ~3.5 KB |
-| `xsts/authorize` (RETAIL) with that token | `401`, XErr `0x8015DC19` |
+```json
+{"RelyingParty":"http://auth.xboxlive.com","TokenType":"SP_JWT",
+ "Properties":{"Attestation":"...","BootLog":"...","Certificate":"...",
+               "DeviceType":"Scarlett","EffectiveRegion":"None"}}
+```
 
-The first two rows differ only in the `DeviceType` value, which rules out a schema problem.
+A retail Series S sends exactly that in 2,963 bytes and gets `200` with an **XCOS** token.
+Adding any desktop field (`Nonce`, `SP_JWT`, `AuthMethod`, `Id`, `Version`, `ProofKey`) turns the
+same request into `400`. Our synthetic five-field body is the same 2,963 bytes and gets `400`:
+same size, different bytes, so the attestation is the check.
 
-**But they do not prove the class gate**, and our first reading overstated it. Repeating the same
-dummy body with `Win32`, `XboxOne`, `Xbox`, `Scarlett` and `Banana` gives `200` only for `Win32`
-and an identical empty `400` for the other four. An unknown string behaves exactly like a console
-class, so from a PC the pair (type + material) cannot be decomposed. What the console adds is the
-other direction: `Scarlett` with real material returns `200`, so a console type is not refused
-per se.
+Attestation is 744 bytes minted by the security processor for a fresh `/device/nonce`; `BootLog`
+is the 320-byte session public key; `Certificate` is the 1,024-byte console certificate. All three
+change per boot.
 
-Also measured: `TokenType` is checked before material. `Win32` + `JWT` → `200`; `Win32` +
-`SP_JWT` → `400`; `Scarlett` + `JWT` → `400`. Only `console type + SP_JWT` reaches the
-attestation verifier.
+Consequences for the model:
 
-Row 3 corrects our own wording. Console types are **not** refused by the issuer — they are
-refused **without real attestation**. With genuine `SP_JWT` material, `Scarlett` returns `200`
-and a console-class JWE.
+- **There is no console-class blocklist at `device.auth`.** With matching attestation, `Scarlett`
+  returns `200`; with the same attestation and `XboxOne` declared, `400`. The type must match what
+  the hardware attests.
+- **The `403` some of us chased is a shape artefact.** The shared 7-field script returns `403` for
+  `Scarlett` and `XboxOne` alike, and double-encodes base64 blobs.
+- **The remaining gate is downstream.** The `200` is an XCOS token, and `xsts/authorize` for
+  RETAIL rejects it with `0x8015DC19` (Q10).
 
-Row 4 is the new wall. A token minted in the Dev Mode sandbox is not accepted by XSTS for RETAIL,
-so "make `device.auth` return 200 for Scarlett" is necessary but not sufficient. Whether the
-cause is sandbox binding, device record, or freshness is Q10.
+So the wall was never a magic string. It is the security processor, and then the sandbox.
 
 ## PS3 stream, primary source reviewed (2026-11-21)
 

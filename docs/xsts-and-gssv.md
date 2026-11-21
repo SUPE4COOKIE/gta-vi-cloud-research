@@ -25,6 +25,9 @@ Notes from testing:
 - The response `DisplayClaims.xui` entry often contains only `uhs` for this relying party;
   XUID and gamertag are not guaranteed to be present.
 - The token is opaque to us; claims of interest are read downstream, not here.
+- A console-minted device token is an **XCOS** token (~3.5 KB). One minted on a Series S in Dev
+  Mode is refused for `RETAIL` with `401` / XErr `0x8015DC19`, even though `device.auth` returned
+  `200` for it minutes earlier.
 
 ## GSSV login
 

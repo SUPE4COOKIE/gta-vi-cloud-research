@@ -13,6 +13,13 @@ All notable changes to this repository. Dates are local to the investigation.
 - Removed a duplicated set of changelog entries.
 
 ### Fixed
+- **`device.auth` has two branches.** The console branch is five fields
+  (`Attestation`, `BootLog`, `Certificate`, `DeviceType`, `EffectiveRegion`), `TokenType: SP_JWT`,
+  no `Signature` header, and returns `200` with an **XCOS** token. Adding any desktop field turns
+  the same request into `400`. Superseded the "console classes are refused" claim in the README,
+  experiments and failed-approaches docs.
+- The shared `403` script is shape-dependent, not class-dependent: it returns `403` for `Scarlett`
+  and `XboxOne` alike, and double-encodes base64 blob files.
 - Qualified the console type-string control: `Banana` returns the same empty `400` as `XboxOne`,
   so the 425/426 pair rules out a schema problem but cannot separate class from invalid type.
   Added the `TokenType` pairing check.
