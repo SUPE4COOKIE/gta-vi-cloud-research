@@ -32,7 +32,7 @@ flowchart LR
 
 | Evidence | Answers | How to obtain | Effort | Held? |
 |---|---|---|---|---|
-| Console `/device/authenticate` request/response metadata (field names, status, claim categories) | U1, U2 | Dev-mode or devkit console plus system-level tracing; possibly a proxied retail console | High | No |
+| Console `/device/authenticate` request/response metadata (field names, status, claim categories) | U1, U2 | **Devkit** (XMAT requires a development console) with system-level proxy/cert; retail dev mode is not enough | High | No |
 | Console SystemOS binaries, logs, certificate metadata | U2, U3 | Dev-mode file access; a working exploit may go further | High | Partially public |
 | A real console starting KI 2 Classic | Premise | Any Xbox with entitlement to the title | Low, if hardware exists | No |
 | Official Windows client GSSV token at sign-in | U4 | Sign in as the entitled account; record status and claim categories only | Medium | No |
@@ -44,7 +44,8 @@ flowchart LR
 
 1. **A console you already own starting KI 2 Classic.** Cheapest possible check of whether the
    allowlist reflects reality. Requires no tracing, no keys, no exploits.
-2. **Dev-mode console (or devkit) with system-level tracing.** The realistic path to U1/U2:
+2. **Devkit with system-level tracing.** The realistic path to U1/U2 — note the console app never
+   calls device auth itself, and XMAT documents a development console requirement:
    does the console expose `/device/authenticate`, what does it carry, and what does the
    server return.
 3. **Official Windows client sign-in as the entitled account.** Closes U4 and costs only an
@@ -60,7 +61,7 @@ flowchart LR
 |---|---|---|
 | Retail console, normal use | Whether a title starts; timings; user-facing errors | System-level traffic internals |
 | Retail console + network proxy | Connection pattern (hosts, timing); TLS payload remains encrypted | Read the device-auth body |
-| Dev mode | App-level HTTP via developer tooling; system logs depending on build | Guaranteed SystemOS auth visibility |
+| Dev mode | App-level HTTP only — the console client never calls device auth, so this cannot see it | SystemOS auth visibility |
 | Devkit | Deeper tracing than retail dev mode | Make the server trust a non-console |
 | Exploited console | Potentially SystemOS files, logs and binaries; 2026 glitch reports key dumps | Guaranteed server acceptance of a cloned identity |
 | Samsung TV | Whether the TV starts KI 2 Classic | Anything for GTA VI |

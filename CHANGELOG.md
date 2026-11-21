@@ -4,6 +4,10 @@ All notable changes to this repository. Dates are local to the investigation.
 
 ## Unreleased
 
+### Changed
+- Roadmap corrected: console capture requires a **devkit**, not retail dev mode, because the
+  console client delegates device auth to the OS service.
+
 ### Added
 - Examined NAND, devkit VHD, xsec source and GDK: none contains a readable console
   certificate or the Live device-auth implementation. DevAuth v2 is accessory auth.
@@ -17,6 +21,10 @@ All notable changes to this repository. Dates are local to the investigation.
 - Console client static analysis incorporated: the app delegates auth to the OS `AuthManager`
   service, so app-level capture cannot see device auth; devkit proxy/cert path identified.
 ## Unreleased
+
+### Changed
+- Roadmap corrected: console capture requires a **devkit**, not retail dev mode, because the
+  console client delegates device auth to the OS service.
 
 ### Added
 - Examined NAND, devkit VHD, xsec source and GDK: none contains a readable console

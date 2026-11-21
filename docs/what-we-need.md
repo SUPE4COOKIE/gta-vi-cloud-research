@@ -14,7 +14,7 @@ if it failed.
 
 **Effort:** minutes, if you own the console and the title.
 
-## 2. Dev-mode console or devkit with system-level tracing
+## 2. Devkit with system-level tracing (dev mode is not enough)
 
 **What it settles:** U1 and U2 — the backend acceptance rule and whether attestation alone is
 enough.
@@ -22,8 +22,10 @@ enough.
 **What to record:** whether `/device/authenticate` is visible at system level, the field
 **names** present, HTTP status, and claim **categories**. Never token values.
 
-**Why it is realistic:** developer tooling already exists for console HTTP inspection. What
-is unverified is whether it sees SystemOS-level authentication rather than only title traffic.
+**Why it needs a devkit:** the console client never performs device auth itself — it asks the OS
+`AuthManager` service. XMAT documents a development console requirement, and the devkit path can
+load a proxy and root certificate from USB (`XblaCopyProxyAndCertFilesFromUSB`). Retail dev mode
+only exposes app traffic, which is not where the request happens.
 
 ## 3. Official Windows client, signed in as an entitled account
 

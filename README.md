@@ -199,7 +199,7 @@ open questions, ranked by value per effort:
 | Evidence | What it settles | Access needed |
 |---|---|---|
 | A console starting Killer Instinct 2 Classic | Whether the allowlist reflects real behaviour | Any Xbox with the title |
-| Dev-mode or devkit system-level trace | What the backend actually accepts | Console + developer tooling |
+| Devkit system-level trace (dev mode is not enough) | What the backend actually accepts | Development console + proxy/cert tooling |
 | Official Windows client, signed in | Where the RPS device token goes | Interactive sign-in |
 | Samsung TV run | KI 2 Classic only, not GTA VI | A TV |
 | Catalogue scans over time | Whether filtering is per account, per offering or global | None |
@@ -213,7 +213,7 @@ make the cloud service trust a PC — see [Game assets and executables](docs/gam
 
 Useful contributions right now:
 
-- **Reproducible evidence** from authorised hardware (dev mode, devkit, retail console you own).
+- **Reproducible evidence** from authorised hardware (devkit, or a retail console you own for gameplay checks).
 - **Static analysis** of public binaries and schema files, with addresses and function references.
 - **Public-source review** of open xCloud clients — what they actually send, not what they claim.
 - **Sanitised reports** from Samsung TV owners testing KI 2 Classic.
