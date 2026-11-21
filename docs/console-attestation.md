@@ -85,6 +85,57 @@ getters plus `XblaCopyProxyAndCertFilesFromUSB`, `XblaAllowUsbCertAndProxy`,
 keys are below it, not inside it. Extracting the DLLs does not yield an identity — but the
 devkit-only USB proxy/cert path is now confirmed as a real capture route.
 
+## Dev Mode, measured (community capture, 2026-11-21)
+
+A retail Series S in Dev Mode, with a trusted CA installed, produced full-TLS captures of the
+sign-in path. The OS `AuthManager` service — not the app — performs device auth, so the
+app-level stub is irrelevant to what the network sees:
+
+| Request | Result |
+|---|---|
+| `device.auth`, `DeviceType: Win32`, `TokenType: JWT`, 426 B body | `200`, JWE ~1.7 KB |
+| `device.auth`, `DeviceType: Xbox`, same shape, 425 B body | `400`, **empty** |
+| `device.auth`, `DeviceType: Scarlett`, `TokenType: SP_JWT`, 2,963 B body | `200`, JWE 3,537–3,539 B |
+| `xsts/authorize` for **RETAIL** using that device token | `401`, XErr `2148916249` (`0x8015DC19`) |
+
+Rows 1–2 are a one-field control: same branch, 425 vs 426 bytes, only the type value differs.
+That settles the **schema** argument: the request shape is fine.
+
+It does **not** settle the class gate on its own. Repeating our dummy body with `Win32`,
+`XboxOne`, `Xbox`, `Scarlett` and `Banana` returns `200` only for `Win32` and an identical empty
+`400` for the rest — including the nonsense string. From a PC, "wrong class" and "invalid type"
+are indistinguishable. Only the console's `200` on real material separates them.
+
+`TokenType` is also part of the pair: `Win32` + `SP_JWT` returns `400`, and so does `Scarlett` +
+`JWT`. The verifier is reached only by `console type + SP_JWT`.
+
+Row 3 **corrects our earlier reading**. A console type is accepted when the request carries real
+attestation material and `TokenType: SP_JWT`. Filler blobs were never going to pass; the issuer
+checks the material, not the field names.
+
+Row 4 is the new wall: a token minted in the **Dev Mode sandbox** is refused by XSTS for RETAIL.
+Sandbox binding, device-record mismatch and freshness are all still possible explanations — see
+Q10 in `open-questions.md`.
+
+Two corrections to the earlier binary reading:
+
+- `XblaProcessChallenge` is E_NOTIMPL in the **app's copy** of `XblAuthConsoleExt.dll`. The
+  system service still performs the call successfully. "The arm cannot be exercised from a
+  dev-mode app" is right; "Dev Mode cannot mint a console token" is **wrong**.
+- `XblaSignDigest` remains a shim. No local signing primitive was found.
+
+A useful side observation: the XSTS request grows by ~1.7 KB when a device token is included, so
+body size alone tells you whether a capture presented one.
+
+### Retail apps cannot start in Dev Mode (measured twice)
+
+`POST /api/taskmanager/app` for `Microsoft.xCloudConsole2…` returns `400` with
+`ErrorCode -2147219196` (`0x80040904`); the same call for Edge returns `0x8004090a`. Neither app
+ran in 60 follow-up checks, and the Dev Mode home has no Game Pass or Cloud tiles.
+
+That closes the "launch the xCloud app in Dev Mode and capture the play call" idea. The auth
+traffic is real and capturable because it comes from system services, not from the retail app.
+
 ## Other console artifacts (checked 2026-11-21)
 
 | Artifact | Result |

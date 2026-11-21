@@ -5,45 +5,53 @@ All notable changes to this repository. Dates are local to the investigation.
 ## Unreleased
 
 ### Fixed
-- Marked the `400 DeviceTypeNotAllowed` results as historical in four documents; the endpoint now
-  returns `500` for that title. Added the missing methodology row to the README index.
-
-### Changed
-- Roadmap corrected: console capture requires a **devkit**, not retail dev mode, because the
-  console client delegates device auth to the OS service.
-
-### Added
-- Examined NAND, devkit VHD, xsec source and GDK: none contains a readable console
-  certificate or the Live device-auth implementation. DevAuth v2 is accessory auth.
-- JWT forgery tests: `alg:none` and tampered signatures both return `401`.
-
-### Added
-- Extracted the real console DLLs from the HDD dump. `XblAuthConsoleExt.dll` is a DeviceIoControl/
-  bcrypt wrapper with no embedded keys; console `XblAuthManager.dll` loads the console API set.
-
-### Added
-- Console client static analysis incorporated: the app delegates auth to the OS `AuthManager`
-  service, so app-level capture cannot see device auth; devkit proxy/cert path identified.
-## Unreleased
+- Major correction: the session `500` was a missing `X-MS-Device-Info` header on our side, not a
+  title fault or an endpoint change. With the header, KI 2 returns `400 DeviceTypeNotAllowed` and
+  KI 2013 returns `202`. The earlier "endpoint drift" entries are withdrawn.
+- Dev Mode can install a trusted CA and intercept console TLS; it cannot mint console tokens
+  (`XblaProcessChallenge` = E_NOTIMPL, `XblaSignDigest` is a shim, not a local signer).
+- Removed a duplicated set of changelog entries.
 
 ### Fixed
-- Marked the `400 DeviceTypeNotAllowed` results as historical in four documents; the endpoint now
-  returns `500` for that title. Added the missing methodology row to the README index.
+- Qualified the console type-string control: `Banana` returns the same empty `400` as `XboxOne`,
+  so the 425/426 pair rules out a schema problem but cannot separate class from invalid type.
+  Added the `TokenType` pairing check.
+
+### Added
+- Dev Mode retail-app launch measured twice: `0x80040904` for the xCloud app. Closed the
+  "capture the play call in Dev Mode" idea.
+
+### Added
+- Console-side full-TLS capture: a one-field control (`Win32` 200 vs `Xbox` 400 empty, 425/426 B)
+  confirms the class gate is not a schema problem, and a real-attestation `Scarlett` request
+  returns a console-class JWE. Corrected the over-broad claim that console types are refused at
+  the issuer.
+- New wall recorded: the Dev Mode token is rejected by `xsts/authorize` for RETAIL with
+  `0x8015DC19`. Added Q10 covering sandbox binding, device record and freshness.
+
+### Added
+- Primary source reviewed: the RetroGaming PS3 stream of 2026-11-19. Real cloud gameplay
+  (~2.5 h, 29–31 fps, wired), stock DeepPlay/GR33N apps, purchased game, **no device spoofing**
+  described. He now says it is blocked. The "device identifiers from his own consoles" claim is
+  not in the stream and remains second-hand.
+- PS3 client session row in the server-hole matrix; launch-window question rewritten around the
+  login/session requests rather than our own instrument error.
+- Timestamp review of that stream: XMB reports "Quit Game (DeepPlay)", overlay is decoder
+  telemetry, and the recording starts mid-session so auth calls are absent.
+- `SP_JWT` structural variants (our-key JWS, random signature, `alg:none`) all return `400`.
 
 ### Changed
-- Roadmap corrected: console capture requires a **devkit**, not retail dev mode, because the
-  console client delegates device auth to the OS service.
+- Roadmap corrected: console capture requires a **devkit** for the token path, not retail dev
+  mode, because the console client delegates device auth to the OS service.
 
 ### Added
 - Examined NAND, devkit VHD, xsec source and GDK: none contains a readable console
   certificate or the Live device-auth implementation. DevAuth v2 is accessory auth.
 - JWT forgery tests: `alg:none` and tampered signatures both return `401`.
-
-### Added
 - Extracted the real console DLLs from the HDD dump. `XblAuthConsoleExt.dll` is a DeviceIoControl/
   bcrypt wrapper with no embedded keys; console `XblAuthManager.dll` loads the console API set.
-
-### Added
+- Console client static analysis incorporated: the app delegates auth to the OS `AuthManager`
+  service, so app-level capture cannot see device auth; devkit proxy/cert path identified.
 - IP-to-hostname mapping of a header-only console capture: XSTS, title.mgt, userpresence and
   GSSV region hosts confirmed during a KI 2 launch; device-auth range present but unconfirmed.
 
@@ -57,18 +65,10 @@ All notable changes to this repository. Dates are local to the investigation.
 ### Added
 - Community DNS observation: launch touches delivery/store hosts, auth not visible (cached),
   which moves the capture window to sign-in/boot.
-
-### Added
 - `research/capture-protocols.md`: turnkey capture and replay protocols A–F for the open matrix
   items, with token-portability evidence from public tooling.
 
 ### Changed
-- Re-derived the session request: `202` control restored. KI 2 Classic now returns `500` on both
-  offerings, so the device gate is no longer measurable from PC; `xgpuwebf2p` returns `403`.
-
-### Changed
-- Recorded session endpoint drift (`500` even for the old control) and marked session tests
-  invalid until the request is re-derived.
 - Closed session-reuse ideas (I/J) with a console owner's report.
 - Noted parallel research reporting `WindowsOneCore` for the PC app, and added references.
 

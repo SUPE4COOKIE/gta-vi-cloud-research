@@ -63,6 +63,41 @@ different `DeviceModel` values on the same account.
 - **Would answer:** controlled experiments changing hardware model strings on the RPS path
   (which the client derives from hardware) — requires driver-level work, not planned.
 
+## Q9a. Was there an enforcement window on launch day?
+
+A creator played GTA VI on a PS3 via GR33N on 2026-11-19, then lost access. The stream is
+genuine gameplay and contains **no device spoofing**: stock apps, purchased game, cloud hours
+paid. He now says it is blocked on PS3 and that streaming from an Xbox is required. Other users
+report `400` when they try.
+
+- **Would answer:** a capture of the **login and session-start requests** from a working PS3
+  client on the 19th (or from any client that worked), and the `allowedDeviceTypes` value for
+  `GRANDTHEFTAUTOVI` as served that day.
+- **Why it matters:** distinguishes the two live hypotheses — the title was temporarily
+  reachable for non-console classes, or the PS3 client presents a class that was briefly
+  accepted. Only the first would have been usable from a PC.
+- **Not evidence:** our own `400`→`500` shift was a missing header on our side, so it cannot be
+  used to date his loss of access. The `400` seen by other users can.
+
+## Q10. What does `0x8015DC19` on XSTS actually mean?
+
+A retail Series S in Dev Mode mints a `Scarlett` device token successfully (`device.auth` → `200`,
+JWE ~3.5 KB), then `xsts/authorize` for RETAIL returns `401` with XErr `2148916249`
+(`0x8015DC19`).
+
+Three candidate causes, in order of likelihood:
+
+1. **Sandbox binding** — the token records the development sandbox, so RETAIL refuses it.
+2. **Device-record mismatch** — the console is known to Live, but not as a retail-play device
+   while booted into Dev Mode.
+3. **Freshness / environment** — clock or attestation age makes the signature unacceptable.
+
+- **Would answer:** the same capture from the same console **booted to retail**, plus the XSTS
+  status and body size for each; and whether a non-GSSV relying party also returns 401.
+- **Why it matters:** if it is sandbox binding, Dev Mode is a dead end for a usable token and
+  only a retail-mode console (or devkit) can produce one. If it is freshness, the Dev Mode path
+  might be repairable.
+
 ## Q9. What does `XblaProcessXcosDeviceToken` do differently?
 
 Two processing paths exist for two console generations. Which fields differ server-side is

@@ -48,11 +48,10 @@ lists it, but session start errors for a non-console client in every region.
 | KI 2 Classic, console offering, same | 500 InternalError |
 | `xgpuwebf2p` login | 403 `OfferingAccessDenied` |
 
-**Interpretation:** the request shape is valid (202 control). KI 2 Classic now returns a server
-error on session start, on both offerings. A nonsense title returns a clean
-`400 OfferingDoesNotContainTitle`, so the 500 is **not** a membership error: the title is present,
-the server reaches it, and errors instead of returning a denial. The old
-`400 DeviceTypeNotAllowed` is no longer reproducible.
+**Interpretation (corrected 2026-11-21):** the `500` was caused by a **missing
+`X-MS-Device-Info` header**, not by the title. With the header, the same request returns
+`400 DeviceTypeNotAllowed`, and KI 2013 returns `202`. The device gate is measurable again.
+Rows 17–23 above describe the malformed shape and are retained only as history.
 
 Additional observations:
 
@@ -85,12 +84,24 @@ session-level tests need either a GTA VI entitlement or a console-side capture.
 | 33 | `/v1/titles` catalogue revision | 2,864 titles, no restricted titles — same content as `/v2` |
 | 34 | `/v5/sessions/cloud/active` | `404` with no active session |
 | 35 | Forged `gsToken`: `alg: none`, `devicetype: XboxOne` | `401` — signature enforced |
+| 37 | KI 2 + `x-gssv-client: XboxOne` + `X-MS-Device-Info` | `400 DeviceTypeNotAllowed` (gate measurable) |
+| 38 | KI 2013 with the same headers | `202` + sessionPath |
+| 39 | GTA VI with the same headers | `400 NoEntitlement` (no licence on test account) |
+| 40 | `device.auth` with `Nintendo`, `Luna` (community) | `200` — other classes accepted |
+| 41 | Console-shaped PoP body with dummy blobs, `Nonce` and a JWT-shaped `SP_JWT` | `400` empty; a community claim of `403` was **not reproduced** |
+| 42 | GTA VI from a PS3 client (GR33N / DeepPlay), 2026-11-19, stock apps, no device spoofing (community) | played ~2.5 h, then **blocked**; other users report `400` |
+| 43 | Console same-shape control: `Win32` (426 B) vs `Xbox` (425 B), only the type differs (community) | `200` vs `400` empty — **class gate confirmed, not schema** |
+| 44 | `device.auth` `Scarlett` + real attestation + `TokenType: SP_JWT` | `200`, console-class JWE 3,537–3,539 B |
+| 45 | `xsts/authorize` for RETAIL with that Dev Mode token | `401`, XErr `2148916249` (`0x8015DC19`) |
+| 46 | Type-string control: `Win32`/`XboxOne`/`Xbox`/`Scarlett`/`Banana`, identical dummy body | `200` only for `Win32`; empty `400` for all others — class and invalid type look the same |
+| 47 | `Win32` + `SP_JWT`, and `Scarlett` + `JWT` | `400` — `TokenType` is checked with the type |
+| 48 | `SP_JWT` structural variants: our-key JWS, random signature, `alg:none` | `400` empty for all three — a well-formed signature is not enough without real material |
 | 36 | Tampered `gsToken` signature | `401` |
 
-**Important:** the `500` is not a device decision. It also hits a title that used to return
-`202`, so the request shape or endpoint has drifted since 2026-11-19. No conclusion can be
-drawn from these until the current session request is re-derived from a working client.
-Recorded as **instrument failure**, not a finding.
+**Correction (2026-11-21):** the `500` was an **instrument failure** — a missing
+`X-MS-Device-Info` header — not a server-side change. With the header the gate is measurable
+again (rows 37–39). Rows recorded on 2026-11-20 that describe `500` should be read as
+malformed-request results, not device decisions.
 
 ## Still open — untested
 
@@ -102,14 +113,15 @@ Recorded as **instrument failure**, not a finding.
 | D | Swap certificates between two consoles | two consoles | tests whether the cert is bound to the device record |
 | E | Clock skew / nonce reuse on a captured request | capture | servers often allow small windows |
 | F | Glitched console key extraction, sign locally | hardware mod | removes the console from the loop |
-| G | Devkit identity | a devkit | devkits may hold a console-class cert |
+| G | Devkit identity | a devkit | devkits may hold a console-class cert. **Updated:** Dev Mode already mints a `Scarlett` token; the blocker is XSTS rejecting it for RETAIL, so the test is whether a devkit/retail-mode token is accepted |
 | H | Use a captured console token with a **different account** | capture + second account | tests whether the token is user-bound |
 | I | Reuse a console `sessionPath` from a PC | capture | **limited observation**: one console owner could not reconnect even on the same console after leaving the app. That covers a terminated session, not every active-session lifecycle |
 | J | Attach to a console-started WebRTC session | capture | same limited observation; not ruled out for an active session |
 | ~~K~~ | ~~`xgpuwebf2p` offering~~ | — | **closed**: 403 `OfferingAccessDenied` for this account |
 | ~~L~~ | ~~Audience / token-type confusion~~ | — | **closed**: `TokenType: JWE` and `RelyingParty: gssv` both return `400` empty with `XboxOne` |
 | ~~M~~ | ~~Certificate-chain leniency~~ | — | **blocked by the parameter gate**: any `Certificate` value returns `400` before chain validation, so leniency cannot be reached |
-| ~~N~~ | ~~Session request re-derivation~~ | — | **done**: 202 control, KI 2 now returns 500 regardless of token |
+| ~~N~~ | ~~Session request re-derivation~~ | — | **done**: the `500` was a missing `X-MS-Device-Info` header; with it, `400 DeviceTypeNotAllowed` |
+| ~~N2~~ | ~~Launch the xCloud app in Dev Mode to capture the play call~~ | — | **closed**: retail apps cannot start in Dev Mode (`0x80040904`) |
 
 ## Session-result chronology (read before comparing rows)
 

@@ -83,20 +83,93 @@ Anything less is progress, not success.
   (13.69.141.149), `userpresence.xboxlive.com` (20.201.200.56), and the `uks`/`weu` GSSV
   region hosts. A `40.90.8.x` range matching `device.auth` is present but not confirmed
   without SNI. First console-side evidence that XSTS and GSSV are contacted during a launch.
+- A Polish creator (RetroGaming) played **GTA VI on a PS3 via GR33N / DeepPlay on 2026-11-19**
+  (2.5-hour stream, primary source reviewed — see below). He says access is now blocked.
 - The 2026 Xbox One boot ROM glitch is reported to yield key dumps and SystemOS decryption.
   Not reproduced, not requested, and not required for any test we can run today.
 
-## Instrument drift (2026-11-20)
+## Console class control (2026-11-21)
 
-Session start works again: KI 2013 returns `202` with a `sessionPath` using the current body
-shape. KI 2 Classic now returns `500 InternalError` on both offerings, for every device token,
-because the title is no longer available to a Win32 client in those catalogues. The old
-`400 DeviceTypeNotAllowed` is not reproducible anymore.
+A full-TLS capture from a retail Series S in Dev Mode gives the cleanest control so far, because
+the console itself generated both sides of it:
 
-Consequence: the device gate cannot be measured for KI 2 Classic from a PC at present. A nonsense
-title returns `400 OfferingDoesNotContainTitle`, so the `500` is not a catalogue-membership error —
-the server reaches the title and fails instead of denying. A future test needs a GTA VI
-entitlement or a console-side capture.
+| Request | Result |
+|---|---|
+| `device.auth`, `Win32`, `JWT`, 426 B | `200`, JWE ~1.7 KB |
+| `device.auth`, `Xbox`, `JWT`, 425 B | `400`, empty |
+| `device.auth`, `Scarlett`, `SP_JWT`, 2,963 B | `200`, JWE ~3.5 KB |
+| `xsts/authorize` (RETAIL) with that token | `401`, XErr `0x8015DC19` |
+
+The first two rows differ only in the `DeviceType` value, which rules out a schema problem.
+
+**But they do not prove the class gate**, and our first reading overstated it. Repeating the same
+dummy body with `Win32`, `XboxOne`, `Xbox`, `Scarlett` and `Banana` gives `200` only for `Win32`
+and an identical empty `400` for the other four. An unknown string behaves exactly like a console
+class, so from a PC the pair (type + material) cannot be decomposed. What the console adds is the
+other direction: `Scarlett` with real material returns `200`, so a console type is not refused
+per se.
+
+Also measured: `TokenType` is checked before material. `Win32` + `JWT` → `200`; `Win32` +
+`SP_JWT` → `400`; `Scarlett` + `JWT` → `400`. Only `console type + SP_JWT` reaches the
+attestation verifier.
+
+Row 3 corrects our own wording. Console types are **not** refused by the issuer — they are
+refused **without real attestation**. With genuine `SP_JWT` material, `Scarlett` returns `200`
+and a console-class JWE.
+
+Row 4 is the new wall. A token minted in the Dev Mode sandbox is not accepted by XSTS for RETAIL,
+so "make `device.auth` return 200 for Scarlett" is necessary but not sufficient. Whether the
+cause is sandbox binding, device record, or freshness is Q10.
+
+## PS3 stream, primary source reviewed (2026-11-21)
+
+The recording (`youtube.com/watch?v=mwP2VLS5hWY`) is real gameplay: GTA VI on a PS3, 29–31 fps,
+20–30 ms reported latency, wired Ethernet, ~720p. Third-party timestamp review adds: the XMB
+shows "Quit Game (DeepPlay)" over the running game, and the overlay is live decoder telemetry
+(decoded/shown frames), so a real PS3 app is decoding a stream. The stream also **starts
+mid-session**, so the login and session-start calls are not in it.
+
+What the stream actually says matters more than the clip:
+
+- He states repeatedly it is **Xbox Cloud Gaming**, not remote play and not an emulator — two
+  homebrew apps, **DeepPlay** and **GR33N**, logged into his Xbox account.
+- He says the game is **purchased on his Xbox account** (GTA VI Ultimate) and cloud hours are
+  paid separately. That is consistent with a normal cloud session, not with a borrowed console.
+- Across ~2.5 hours there is **no mention of spoofing, device strings, patched binaries or
+  modified auth**. He attributes it to Microsoft "allowing the older Xbox One / One S / One X"
+  to play GTA VI in the cloud, and says he only reviewed the apps' decompilation with AI tools.
+- In comments posted a day later he says it is **now blocked**: "it worked via cloud then, now
+  it's blocked and you have to stream from another MS console", and "they've already blocked it
+  on PS3". Another commenter reports `xbox could not start this game (code HTTP 400)`.
+- One commenter claims it was DeepPlay's **Remote Play** and required an Xbox. RetroGaming
+  replies "DeepPlay yes, GR33N no", which is ambiguous but does not concede remote play.
+
+The earlier claim that he tried device identifiers from his own Xbox One and Series consoles
+**does not appear in the stream** and remains second-hand from a third party.
+
+**Reading:** this is a window, not a method, and it does not contradict the device gate. If the
+session was genuine cloud on a stock client, the plausible explanations are (a) the title was
+temporarily reachable for non-console classes at launch and the allowlist was enforced
+afterwards, or (b) the PS3 client presents a class that was briefly accepted. Neither requires a
+console-class token, and neither is reproducible today. Note that our own `500` was an
+instrument bug, so the 19→20 November `400`→`500` shift here is **not** evidence for his
+timeline; the `400` reported by other users is.
+
+## Session shape corrected (2026-11-21)
+
+The `500` was **our request shape**, not a title problem. A console-side researcher found that
+`X-MS-Device-Info` must be present; without it the service returns `500 InternalError`, with it
+the real gate appears. Reproduced here:
+
+| Request | Result |
+|---|---|
+| KI 2 Classic, `xgpuconsole`, no device header | `500` |
+| KI 2 Classic, `xgpuconsole`, `X-MS-Device-Info` | `400 DeviceTypeNotAllowed` |
+| KI 2013, same headers | `202` + sessionPath |
+| GTA VI, same headers | `400 NoEntitlement` (account has no licence) |
+
+So the device gate is measurable again, and the denial is exactly what the model predicted.
+The earlier "title not available to Win32" reading was wrong.
 
 ## Snapshot drift
 

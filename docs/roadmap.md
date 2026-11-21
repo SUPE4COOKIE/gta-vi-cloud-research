@@ -32,7 +32,7 @@ flowchart LR
 
 | Evidence | Answers | How to obtain | Effort | Held? |
 |---|---|---|---|---|
-| Console `/device/authenticate` request/response metadata (field names, status, claim categories) | U1, U2 | **Devkit** (XMAT requires a development console) with system-level proxy/cert; retail dev mode is not enough | High | No |
+| Console `/device/authenticate` request/response metadata (field names, status, claim categories) | U1, U2 | **Dev Mode console** can install a trusted root CA and capture TLS, and does mint console-class tokens — but XSTS for RETAIL rejects them (`0x8015DC19`). A retail-mode console or devkit is still the only route | High | No |
 | Console SystemOS binaries, logs, certificate metadata | U2, U3 | Dev-mode file access; a working exploit may go further | High | Partially public |
 | A real console starting KI 2 Classic | Premise | Any Xbox with entitlement to the title | Low, if hardware exists | No |
 | Official Windows client GSSV token at sign-in | U4 | Sign in as the entitled account; record status and claim categories only | Medium | No |

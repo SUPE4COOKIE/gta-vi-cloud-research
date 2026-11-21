@@ -35,6 +35,10 @@ Public sources used or reviewed. Links are external and may change.
 - unifideck xCloud notes (offering/entitlement observations, `FERDINAND`) — <https://github.com/mubaraknumann/unifideck/blob/staging/docs/microsoft-xcloud.md>
 - Xbox Wire, cloud playtime changes (September 2026) — <https://news.xbox.com/en-us/2026/09/03/xbox-cloud-gaming-changes/>
 
+## Primary sources
+
+- RGL, GTA VI on PS3 via DeepPlay/GR33N, 2026-11-19 (2.5 h stream) — <https://www.youtube.com/watch?v=mwP2VLS5hWY>
+
 ## Xbox One system files
 
 - Xbox One Research wiki, operating system layout — <https://xboxoneresearch.github.io/wiki/operating-system/xbox-operating-system/>

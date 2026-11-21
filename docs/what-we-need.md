@@ -14,7 +14,7 @@ if it failed.
 
 **Effort:** minutes, if you own the console and the title.
 
-## 2. Devkit with system-level tracing (dev mode is not enough)
+## 2. Dev Mode console with TLS interception (devkit still better)
 
 **What it settles:** U1 and U2 — the backend acceptance rule and whether attestation alone is
 enough.
@@ -22,10 +22,13 @@ enough.
 **What to record:** whether `/device/authenticate` is visible at system level, the field
 **names** present, HTTP status, and claim **categories**. Never token values.
 
-**Why it needs a devkit:** the console client never performs device auth itself — it asks the OS
-`AuthManager` service. XMAT documents a development console requirement, and the devkit path can
-load a proxy and root certificate from USB (`XblaCopyProxyAndCertFilesFromUSB`). Retail dev mode
-only exposes app traffic, which is not where the request happens.
+**Correction (community reported, 2026-11-21):** a root CA installed on a retail console **is**
+trusted in Dev Mode, and `S:\microsoft\cert\` is writable there, so TLS interception does not need
+a devkit.
+
+**What Dev Mode cannot do:** produce a token that RETAIL accepts. It *does* mint a console-class
+token (`Scarlett` + `SP_JWT` → `200`), but XSTS for RETAIL refuses it with `0x8015DC19`. The app
+copy of `XblaProcessChallenge` is a stub; the OS service is not.
 
 ## 3. Official Windows client, signed in as an entitled account
 

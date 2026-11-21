@@ -199,7 +199,7 @@ open questions, ranked by value per effort:
 | Evidence | What it settles | Access needed |
 |---|---|---|
 | A console starting Killer Instinct 2 Classic | Whether the allowlist reflects real behaviour | Any Xbox with the title |
-| Devkit system-level trace (dev mode is not enough) | What the backend actually accepts | Development console + proxy/cert tooling |
+| Devkit or retail-mode trace (Dev Mode mints a token but RETAIL refuses it) | What the backend actually accepts | Development console + proxy/cert tooling |
 | Official Windows client, signed in | Where the RPS device token goes | Interactive sign-in |
 | Samsung TV run | KI 2 Classic only, not GTA VI | A TV |
 | Catalogue scans over time | Whether filtering is per account, per offering or global | None |

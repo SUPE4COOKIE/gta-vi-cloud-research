@@ -63,11 +63,21 @@ data point.
 
 What was found:
 
-- Videos advertising GTA VI cloud play did not show a conclusive, uninterrupted launch; one
-  showed an access-denied screen.
+- **One genuine session is on record.** A 2.5-hour stream from 2026-11-19 shows GTA VI running
+  on a PS3 at 29–31 fps over wired Ethernet, launched from stock DeepPlay/GR33N with a game
+  purchased on the creator's Xbox account. No spoofing or patched binary is described. The PS3
+  XMB reports "Quit Game (DeepPlay)" and the overlay is live decoder telemetry, so the decode
+  is real; the stream begins mid-session, so the auth calls are not visible.
+- The same creator says access is **now blocked** on PS3, and other viewers report
+  `xbox could not start this game (code HTTP 400)`.
+- Earlier advertising videos did not show a conclusive, uninterrupted launch; one showed an
+  access-denied screen.
 - A DeepPlay issue discusses browser-type client behaviour, but it is a community comment,
   not a developer-confirmed identity trace.
-- No reproducible restricted-title session on PS3 was demonstrated.
+
+So the honest summary is: one working window, no reproduced method. Which device class the PS3
+client presented, and whether the title's allowlist was simply not enforced that day, is unknown.
+Neither explanation implies a console-class token was obtained.
 
 ## Bannerlator
 

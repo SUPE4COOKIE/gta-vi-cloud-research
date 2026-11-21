@@ -92,5 +92,7 @@ live in `/docs`; this page is the audit trail.
   `userPrograms ["FERDINAND"]`, `maxSessionLengthInSeconds: 1800`, and
   `DeviceTypeNotAllowed` despite an `XGPUCONSOLE` login on PC.
 - Public documentation describes `FERDINAND` as the ad-supported owned-games tier.
-- Community projects (DeepPlay/GR33N, Bannerlator, GTAXC) have not demonstrated an accepted
-  restricted session.
+- One DeepPlay/GR33N session (GTA VI on PS3, 2026-11-19) is documented on video, but it was not
+  reproducible: the creator reports it blocked the next day and other users get `400`. No
+  identity trace exists, so it does not show which device class was presented.
+- Bannerlator and GTAXC have not demonstrated an accepted restricted session.
