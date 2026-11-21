@@ -25,9 +25,10 @@ Notes from testing:
 - The response `DisplayClaims.xui` entry often contains only `uhs` for this relying party;
   XUID and gamertag are not guaranteed to be present.
 - The token is opaque to us; claims of interest are read downstream, not here.
-- A console-minted device token is an **XCOS** token (~3.5 KB). One minted on a Series S in Dev
-  Mode is refused for `RETAIL` with `401` / XErr `0x8015DC19`, even though `device.auth` returned
-  `200` for it minutes earlier.
+- A console-minted device token comes back as **XCOS** (~3.5 KB), and XSTS refuses that form
+  outright (`400`) in every combination — with user tokens, alone, RETAIL, dev sandbox, no sandbox.
+- The console converts XCOS to a **JWE** locally (`XblaProcessXcosDeviceToken`, not available to
+  apps). Only the JWE reaches XSTS; from Dev Mode it gets `401` / XErr `0x8015DC19`.
 
 ## GSSV login
 

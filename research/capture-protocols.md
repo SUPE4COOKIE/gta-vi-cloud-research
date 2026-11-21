@@ -22,9 +22,9 @@ never calls `device.auth` itself — it asks the OS `AuthManager` service — so
 sees nothing. But system-level TLS interception does: a Dev Mode console with a CA installed
 captured `device.auth`, XSTS and title traffic on 2026-11-21.
 
-What Dev Mode cannot do is produce a token RETAIL accepts. It mints a console-class XCOS token,
-and `xsts/authorize` for RETAIL returns `401` / `0x8015DC19`. Use Dev Mode to learn the shape;
-the replay half needs a retail boot.
+What Dev Mode cannot do is produce a token RETAIL accepts. It mints an XCOS token, but apps cannot
+convert it to the JWE that XSTS expects (`0x87DD0001`), and the console's own JWE still gets
+`0x8015DC19` for RETAIL. Use Dev Mode to learn the shape; the replay half needs a retail boot.
 
 The devkit path exists in `XblAuthConsoleExt.dll` (`XblaCopyProxyAndCertFilesFromUSB`), which loads
 proxy settings and certificates from `s:\microsoft\cert\*.cer`, including a `FiddlerRoot.cer`

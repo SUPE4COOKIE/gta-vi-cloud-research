@@ -70,9 +70,15 @@ Outcome:
 |---|---|---|
 | desktop shape, `Win32`/`iOS`/`Android`/`Nintendo` | `200` | device token |
 | desktop shape, console type | `400` | none, empty body |
-| console shape, SP attestation matching the type | `200` | XCOS |
+| console shape, SP attestation matching the type | `200` | XCOS (intermediate, not accepted by XSTS) |
 | console shape, synthetic material | `400` | none |
 | console shape + desktop fields | `400`, or `403` with the shared script's set | none |
+
+## 1a. Device token conversion (no HTTP call)
+
+`device.auth` returns an **XCOS** token. XSTS does not accept it — every combination returns
+`400`. The console converts XCOS to a **JWE** locally through `XblaProcessXcosDeviceToken`, which
+is not available to apps (`0x87DD0001`). Only the JWE is sent in `Properties.DeviceToken`.
 
 ## 2. XSTS authorisation
 

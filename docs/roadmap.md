@@ -7,8 +7,8 @@ try" but "what artifact would settle which unknown".
 
 | ID | Unknown | Current state |
 |---|---|---|
-| U1 | What the backend actually validates for a console identity | Partially answered: attestation must match the declared type; XSTS adds a sandbox check |
-| U2 | Whether a genuine attestation is sufficient by itself | Partially: accepted at `device.auth`, rejected at RETAIL XSTS from Dev Mode |
+| U1 | What the backend actually validates for a console identity | Partially answered: attestation must match the type; XCOS must be converted to JWE locally; XSTS then checks the sandbox |
+| U2 | Whether a genuine attestation is sufficient by itself | Partially: accepted at `device.auth`, but yields XCOS, which XSTS refuses |
 | U3 | Whether a console record must also be registered to the account | Untested |
 | U4 | Whether the Windows RPS device token reaches XSTS/GSSV, and with what class | Unobserved |
 | U5 | Whether catalogue filtering is per-account, per-offering or global | Partially mapped |

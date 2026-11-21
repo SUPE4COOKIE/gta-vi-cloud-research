@@ -21,7 +21,7 @@ a test metric and should not be read as "47% of a bypass".
 | Device allowlists exist per title and are enforced at session start | Locally tested |
 | KI 2013 starts (`202`) while KI 2 Classic is refused (`400 DeviceTypeNotAllowed`) on the same account | Locally tested (reproduced 2026-11-21) |
 | Device class travels from the device token into the GSSV session claim | Locally tested |
-| `device.auth` has separate desktop and console shapes; the console shape needs SP-minted attestation and returns an XCOS token | Locally tested + console capture (2026-11-21) |
+| `device.auth` has separate desktop and console shapes; the console shape needs SP-minted attestation and returns XCOS, an intermediate only the system can convert | Locally tested + console capture (2026-11-21) |
 | PoP signatures for console-type requests on the desktop branch were structurally valid — the wrong branch, see below | Locally tested (offline verification) |
 | The console wire request carries certificate, attestation, boot log, type and region — no nonce or SP token | Console capture (2026-11-21) |
 | The console provider API set has no implementation host on desktop Windows | Verified (schema + binary) |
@@ -121,10 +121,14 @@ Consequences for the model:
   the hardware attests.
 - **The `403` some of us chased is a shape artefact.** The shared 7-field script returns `403` for
   `Scarlett` and `XboxOne` alike, and double-encodes base64 blobs.
-- **The remaining gate is downstream.** The `200` is an XCOS token, and `xsts/authorize` for
-  RETAIL rejects it with `0x8015DC19` (Q10).
+- **XCOS is not a credential.** `xsts/authorize` refuses it in every combination — user tokens
+  plus device token, device token alone, RETAIL, a dev sandbox, no sandbox — always `400`. The
+  console converts XCOS to a **JWE** locally with `XblaProcessXcosDeviceToken`; that call returns
+  `0x87DD0001` to apps. Only the JWE is accepted by XSTS.
+- **The second wall is the converted JWE.** From Dev Mode it gets `401 0x8015DC19` (Q10).
 
-So the wall was never a magic string. It is the security processor, and then the sandbox.
+So the wall was never a magic string. It is the security processor, then a system-only conversion,
+then the sandbox.
 
 ## PS3 stream, primary source reviewed (2026-11-21)
 

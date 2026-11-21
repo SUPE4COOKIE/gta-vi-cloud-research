@@ -5,6 +5,10 @@ All notable changes to this repository. Dates are local to the investigation.
 ## Unreleased
 
 ### Fixed
+- Split the console gate into two walls. **XCOS is not a credential**: XSTS refuses it in every
+  combination (`400`). The console converts it to a **JWE** locally via
+  `XblaProcessXcosDeviceToken`, which returns `0x87DD0001` to apps. Only the JWE is evaluated, and
+  from Dev Mode it gets `0x8015DC19`.
 - **`device.auth` has two branches.** The console branch is five fields
   (`Attestation`, `BootLog`, `Certificate`, `DeviceType`, `EffectiveRegion`), `TokenType: SP_JWT`,
   no `Signature` header, and returns `200` with an **XCOS** token. Adding any desktop field turns

@@ -81,10 +81,13 @@ report `400` when they try.
 
 ## Q10. What does `0x8015DC19` on XSTS actually mean?
 
-A retail Series S in Dev Mode mints a `Scarlett` device token successfully (`device.auth` → `200`,
-**XCOS** token ~3.5 KB), then `xsts/authorize` for RETAIL returns `401` with XErr `2148916249`
-(`0x8015DC19`). The console branch itself is now fully mapped: five fields, `TokenType: SP_JWT`,
-no `Signature` header, SP-minted attestation that must match the declared type.
+A retail Series S in Dev Mode mints a `Scarlett` token successfully (`device.auth` → `200`,
+**XCOS** ~3.5 KB). XSTS refuses XCOS in every combination (`400`); the console converts it to a
+**JWE** locally via `XblaProcessXcosDeviceToken`, which returns `0x87DD0001` to apps. That JWE is
+what XSTS evaluates, and for RETAIL it returns `401` / XErr `2148916249` (`0x8015DC19`).
+
+The console branch itself is fully mapped: five fields, `TokenType: SP_JWT`, no `Signature` header,
+SP-minted attestation that must match the declared type.
 
 Three candidate causes, in order of likelihood:
 
@@ -97,7 +100,8 @@ Three candidate causes, in order of likelihood:
   status and body size for each; and whether a non-GSSV relying party also returns 401.
 - **Why it matters:** if it is sandbox binding, Dev Mode is a dead end for a usable token and
   only a retail-mode console (or devkit) can produce one. If it is freshness, the Dev Mode path
-  might be repairable.
+  might be repairable. The conversion step is closed separately: apps cannot call it, so an XCOS
+  token obtained outside the console is useless regardless.
 
 ## Q9. What does `XblaProcessXcosDeviceToken` do differently?
 

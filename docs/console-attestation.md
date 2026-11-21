@@ -100,7 +100,7 @@ two wire shapes, and they do not mix.
 | `TokenType` | `JWT` | `SP_JWT` |
 | `Signature` header | required | **absent** |
 | Material | self-signed `ProofKey` | SP-minted attestation for a fresh nonce |
-| Result | `200` for `Win32`/`iOS`/`Android`/`Nintendo` | `200`, **XCOS** token |
+| Result | `200` for `Win32`/`iOS`/`Android`/`Nintendo` | `200`, **XCOS** (intermediate) |
 
 The captured console request is 2,963 bytes and returns `200` with a ~3.5 KB XCOS token. It
 contains no `Nonce`, no `SP_JWT`, no `AuthMethod`, no `ProofKey`, and no `Signature` header.
@@ -135,8 +135,11 @@ so even real blobs arrive double-encoded through that path.
 **The type must match the attestation.** Same attestation, same second: `Scarlett` → `200`,
 `XboxOne` → `400`. `DeviceType` is a claim the hardware has to back, not a switch.
 
-**Ceiling:** the `200` is an XCOS token, and `xsts/authorize` for RETAIL rejects it with
-`0x8015DC19` (Q10). The console path is reachable; a RETAIL session is not.
+**Two walls, not one.** `device.auth` returns XCOS, and `xsts/authorize` refuses that form
+outright — `400` with user tokens, alone, RETAIL, a dev sandbox, or no sandbox. The console
+converts XCOS to a **JWE** locally via `XblaProcessXcosDeviceToken`; from an app that call returns
+`0x87DD0001`. The converted JWE is then refused for RETAIL from Dev Mode with `0x8015DC19` (Q10).
+So the console path is reachable, but nothing it hands an app is usable off the unit.
 
 ## Dev Mode (measured)
 
