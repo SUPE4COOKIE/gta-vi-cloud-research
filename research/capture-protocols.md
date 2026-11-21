@@ -17,9 +17,17 @@ That is evidence, not proof. The replay test is what settles it.
 
 ## Protocol A — capture a console device token and replay from PC
 
-**Tester needs:** an Xbox **development console** (XMAT documents recovery 2106 or later) or a
-devkit; retail Dev Mode may not expose console capture. Verify the capture path with an ordinary
-request before trusting any absence. A Windows PC runs XMAT.
+**Tester needs:** a **devkit**, not a retail console in Dev Mode. Static analysis of the console
+client shows the app never calls `device.auth` or XSTS: it asks the OS `AuthManager` service for a
+token. The service, not the app, performs device authentication. An app-level proxy therefore
+cannot see the request.
+
+The devkit path exists in `XblAuthConsoleExt.dll` (`XblaCopyProxyAndCertFilesFromUSB`), which loads
+proxy settings and certificates from `s:\microsoft\cert\*.cer`, including a `FiddlerRoot.cer`
+literal. That is the sanctioned capture route and it is devkit-only.
+
+Verify capture coverage with an ordinary request before trusting any absence. A Windows PC runs
+XMAT.
 
 1. Enable dev mode, install XMAT on the PC, point the console at the PC proxy.
 2. **Capture around sign-in or reboot, not only around launch.** A console owner's DNS logs
@@ -75,6 +83,21 @@ to fail for a trivial reason and proves nothing about device records.
 
 The meaningful version is only possible with B's signing key available to sign a body that
 carries A's certificate — i.e. a console with extractable keys. Without that, skip this protocol.
+
+## Capture hygiene
+
+A submitted hotspot capture had a **snaplen of 82 bytes**, which records Ethernet/IP/TCP headers
+and nothing else: no TLS ClientHello, no SNI, no DNS answers, no payload. It showed 543
+connections to Microsoft and Akamai ranges over eight minutes and told us nothing about hosts.
+
+Always capture with `-s 0` (full packets) and include DNS:
+
+```
+tcpdump -i <iface> -s 0 -w capture.pcap
+```
+
+Verify before sending: a ClientHello packet should be several hundred bytes, and DNS queries
+should appear in the file.
 
 ## Protocol G — full session lifecycle
 

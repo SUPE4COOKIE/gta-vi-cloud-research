@@ -77,6 +77,12 @@ Anything less is progress, not success.
   store hosts appeared (`d2.xboxlive.com`, `www.xbox.com`, CDN CNAMEs), but no auth host, and a
   reboot did not re-query. Consistent with the device token being issued at sign-in/boot and
   cached. DNS gives hostnames only — no paths, no payloads.
+- A second console capture (header-only, 82-byte snaplen) was taken during a KI 2 launch. Even
+  without payloads, resolving known hostnames and intersecting the capture's IPs shows the
+  console contacting: `xsts.auth.xboxlive.com` (20.201.192.52), `title.mgt.xboxlive.com`
+  (13.69.141.149), `userpresence.xboxlive.com` (20.201.200.56), and the `uks`/`weu` GSSV
+  region hosts. A `40.90.8.x` range matching `device.auth` is present but not confirmed
+  without SNI. First console-side evidence that XSTS and GSSV are contacted during a launch.
 - The 2026 Xbox One boot ROM glitch is reported to yield key dumps and SystemOS decryption.
   Not reproduced, not requested, and not required for any test we can run today.
 

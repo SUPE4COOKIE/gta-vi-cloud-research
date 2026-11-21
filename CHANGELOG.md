@@ -4,6 +4,33 @@ All notable changes to this repository. Dates are local to the investigation.
 
 ## Unreleased
 
+### Added
+- Examined NAND, devkit VHD, xsec source and GDK: none contains a readable console
+  certificate or the Live device-auth implementation. DevAuth v2 is accessory auth.
+- JWT forgery tests: `alg:none` and tampered signatures both return `401`.
+
+### Added
+- Extracted the real console DLLs from the HDD dump. `XblAuthConsoleExt.dll` is a DeviceIoControl/
+  bcrypt wrapper with no embedded keys; console `XblAuthManager.dll` loads the console API set.
+
+### Added
+- Console client static analysis incorporated: the app delegates auth to the OS `AuthManager`
+  service, so app-level capture cannot see device auth; devkit proxy/cert path identified.
+## Unreleased
+
+### Added
+- Examined NAND, devkit VHD, xsec source and GDK: none contains a readable console
+  certificate or the Live device-auth implementation. DevAuth v2 is accessory auth.
+- JWT forgery tests: `alg:none` and tampered signatures both return `401`.
+
+### Added
+- Extracted the real console DLLs from the HDD dump. `XblAuthConsoleExt.dll` is a DeviceIoControl/
+  bcrypt wrapper with no embedded keys; console `XblAuthManager.dll` loads the console API set.
+
+### Added
+- IP-to-hostname mapping of a header-only console capture: XSTS, title.mgt, userpresence and
+  GSSV region hosts confirmed during a KI 2 launch; device-auth range present but unconfirmed.
+
 ### Changed
 - Independent review corrections: softened the hardware-attestation claim, narrowed the
   catalogue-gating conclusion, clarified the session-result chronology, relabelled session

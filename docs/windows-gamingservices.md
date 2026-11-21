@@ -63,6 +63,16 @@ Two details stand out:
 Because the token is encrypted to a recipient we do not control, the issued device class is
 **not observable** client-side. Observing a `200` does not tell us what class was granted.
 
+## Console counterpart (verified static)
+
+A static analysis of the console client (`Microsoft.xCloudConsole2`) found the app itself never
+calls `device.auth` or XSTS. It requests a token from `Windows.System.Internal.XboxLive.Auth.AuthManager`,
+a WinRT facade over the out-of-process `XblAuthManager` service — the same DLL analysed here.
+The service owns the console request builder and the `Xbla*` attestation provider.
+
+Consequence: app-level capture on a console cannot see `/device/authenticate`. Only a devkit
+system-level capture (or a glitched console) can.
+
 ## Why this matters
 
 It means there are two distinct Windows paths:

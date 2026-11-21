@@ -60,6 +60,42 @@ There is a separate subsystem:
 The builder does **not** read `+0xa0`, and no data path from the challenge result into the
 device-auth JSON was found. This does not exclude indirect security-processor state changes.
 
+## Console binaries (verified, 2026-11-21)
+
+The retail HDD dump contains the actual console DLLs. Extracted read-only:
+
+```
+XblAuthConsoleExt.dll   76 KB   42 exports
+XblAuthManager.dll      1.2 MB  1 export (ServiceMain)
+XblAuthManagerProxy.dll 116 KB
+XblAuthTokenBrokerExt.dll 132 KB
+xboxcloudstreaming.dll  740 KB
+xboxlivetitleid.dll      64 KB
+```
+
+`XblAuthConsoleExt.dll` imports `DeviceIoControl`, `bcrypt`, `XCRDAPI` and `XboxLiveTitleId`.
+It contains **no embedded keys or certificate material**. Its exports include the expected
+getters plus `XblaCopyProxyAndCertFilesFromUSB`, `XblaAllowUsbCertAndProxy`,
+`XblaResetSmcReloadAlgorithm` and capability-certificate helpers.
+
+`XblAuthManager.dll` (console build) loads `ext-ms-win-xblauth-console-l1-1-0.dll` and references
+`XblaGetConsoleCert` / `XblaGetAttestation`, exactly as the desktop build does.
+
+**Conclusion:** the console binary is a user-mode wrapper over a device/driver path. The signing
+keys are below it, not inside it. Extracting the DLLs does not yield an identity — but the
+devkit-only USB proxy/cert path is now confirmed as a real capture route.
+
+## Other console artifacts (checked 2026-11-21)
+
+| Artifact | Result |
+|---|---|
+| NAND image (4.9 GB) | Mostly empty; no plaintext `certkeys`, `sp_s.cfg`, or console certificate |
+| Devkit recovery VHD | No plaintext `XblAuthConsoleExt`, `certkeys`, or `XblAuthManager` strings |
+| `xsec` source leak | Contains DevAuth v2, which is **accessory** authentication (Indium chip certificates), not console-to-Live identity |
+| GDK SDK | Installer CABs; no auth implementation |
+
+The only readable artifact remains the retail HDD dump.
+
 ## The boundary: console-only API set
 
 The getters live behind:

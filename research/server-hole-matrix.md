@@ -75,6 +75,17 @@ session-level tests need either a GTA VI entitlement or a console-side capture.
 | 21 | Same shape for unrestricted KI 2013 | `500 InternalError` → later `202` after re-derivation |
 | 22 | Console client header + console-style settings (`XboxOne`, `native`) | `400 OfferingDoesNotContainTitle` |
 | 23 | `XboxSeriesX` header + `xboxOS` settings | `400 OfferingDoesNotContainTitle` |
+| 26 | Undocumented offering `xgpu` | login 200, catalogue 2,864 titles, no restricted titles; session KI 2 → `400 OfferingDoesNotContainTitle` |
+| 27 | Offerings `xcloud`, `xgpuconsolex` | `403 OfferingAccessDenied` |
+| 28 | Catalogue query params `deviceType=XboxOne`, `device=XboxOne`, `deviceType=Scarlett` | ignored; no restricted titles |
+| 29 | Title ID case and trailing space variants | `400 OfferingDoesNotContainTitle` |
+| 30 | KI 2013 session on `xgpu` offering | `504` gateway timeout |
+| 31 | `gssv-auth-prod.xboxlive.com` root | `404` (host exists, no HTTP root) |
+| 32 | SDK login body `{authenticationType, token}` | `400 InvalidRequestParameter` (offeringId required by this endpoint) |
+| 33 | `/v1/titles` catalogue revision | 2,864 titles, no restricted titles — same content as `/v2` |
+| 34 | `/v5/sessions/cloud/active` | `404` with no active session |
+| 35 | Forged `gsToken`: `alg: none`, `devicetype: XboxOne` | `401` — signature enforced |
+| 36 | Tampered `gsToken` signature | `401` |
 
 **Important:** the `500` is not a device decision. It also hits a title that used to return
 `202`, so the request shape or endpoint has drifted since 2026-11-19. No conclusion can be
@@ -122,7 +133,7 @@ untested:
 
 | # | Test | Effort |
 |---|---|---|
-| O | Explain the current `500`: compare `hasEntitlement`, `programs`, `userPrograms` against session result for KI 2, KI 2013 and a nonexistent title, with correlation IDs | Low |
+| O | Explain the current `500`: compare `hasEntitlement`, `programs`, `userPrograms` against session result for KI 2, KI 2013 and a nonexistent title, with correlation IDs | **run 2026-11-21 — entitlement ruled out, see below** |
 | P | Validate a full working PC stream as a control: `/play` → state → `/connect` → SDP/ICE → first frame | Low |
 | Q | Token portability prerequisite: reuse one legitimate `Win32` `gsToken` in two PC environments | Low |
 | R | Compare `WindowsOneCore` vs `Win32` sign-in paths on the same PC and the resulting `gsToken.devicetype` | Medium |
@@ -130,6 +141,21 @@ untested:
 | T | Structural comparison of the synthetic request against the disassembled builder | Medium |
 | U | Capture the console's full session lifecycle, not just `/device/authenticate` | Medium |
 | V | Capture console-side catalogue/eligibility context (offering, programs, runtime, sandbox) | Low |
+
+### O result (2026-11-21)
+
+Same offering (`xgpuconsole`), same client, same minute:
+
+| Title | Entitlement | Allowlist | Programs | Session |
+|---|---|---|---|---|
+| KI 2 Classic | true | XBOXONE, SCARLETT, SAMSUNGTV | CALLISTO | `500` (correlation id returned) |
+| KI 2013 | true | none | CALLISTO | `202` + sessionPath |
+| nonexistent | — | — | — | `400 OfferingDoesNotContainTitle` |
+
+Entitlement and programme grants are identical between the two KI titles, so the `500` is not an
+entitlement or catalogue-membership error. It correlates only with the restricted title. The
+cause is still unknown — a title-level fault, an error path in the device check, or something
+else.
 
 ## Evidence that borrowing could work
 
