@@ -19,7 +19,7 @@ a test metric and should not be read as "47% of a bypass".
 | Claim | Level |
 |---|---|
 | Device allowlists exist per title and are enforced at session start | Locally tested |
-| KI 2013 starts (`202`) while KI 2 Classic is refused (`400 DeviceTypeNotAllowed`) on the same account | Locally tested |
+| KI 2013 starts (`202`) while KI 2 Classic was refused (`400 DeviceTypeNotAllowed`) on the same account — historical, now `500` | Locally tested (2026-11-19) |
 | Device class travels from the device token into the GSSV session claim | Locally tested |
 | `device.auth` issues `Win32`, `Android`, `iOS` and refuses console classes | Locally tested |
 | PoP signatures for console requests were structurally valid | Locally tested (offline verification of fresh requests) |

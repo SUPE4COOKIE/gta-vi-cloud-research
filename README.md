@@ -236,6 +236,7 @@ account identifiers. Read [community/discord.md](community/discord.md) before po
 | Document | What it covers |
 |---|---|
 | [Research overview](docs/research-overview.md) | Scope, method, evidence levels |
+| [Methodology](docs/methodology.md) | How claims are labelled and what counts as proof |
 | [Current status](docs/current-status.md) | What is proven, what is not, completion criteria |
 | [Authentication flow](docs/authentication-flow.md) | Client → device.auth → XSTS → GSSV → session |
 | [Device restrictions](docs/device-restrictions.md) | Allowlists, KI 2 Classic, GTA VI |

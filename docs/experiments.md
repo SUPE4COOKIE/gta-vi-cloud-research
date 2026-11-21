@@ -9,7 +9,7 @@ recorded the result; values that would be credentials are never included.
 |---|---|---|---|---|
 | 1 | Restricted titles exist in the catalogue | Paginate `/v2/titles` and inspect `allowedDeviceTypes` | KI 2 Classic restricted to `XBOXONE, SCARLETT, SAMSUNGTV` | Locally tested |
 | 2 | Entitlement explains the refusal | Compare KI 2013 / KI Classic 1 / KI 2 Classic rows | All entitled; only KI 2 Classic restricted | Locally tested |
-| 3 | Session start fails before allocation | `POST /v5/sessions/cloud/play` on both titles | KI 2 → `400 DeviceTypeNotAllowed` in ~400 ms; KI 2013 → `202` + `sessionPath` | Locally tested |
+| 3 | Session start fails before allocation | `POST /v5/sessions/cloud/play` on both titles | KI 2 → `400 DeviceTypeNotAllowed` in ~400 ms; KI 2013 → `202` + `sessionPath` (2026-11-19; KI 2 now returns `500`) | Locally tested |
 | 4 | Client metadata can pass the gate | ~250 variations of UA, device info, client, OS, sdkType, model, region, API version | All refused | Locally tested |
 | 5 | The console offering behaves differently | `xgpuconsole` login + 79 variations | Catalogue lists the title; session still refused | Locally tested |
 | 6 | The PC app offering exposes the titles | `XGPUPCAPP` catalogue pull | Both restricted titles absent | Locally tested |

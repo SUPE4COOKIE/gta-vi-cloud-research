@@ -4,6 +4,10 @@ All notable changes to this repository. Dates are local to the investigation.
 
 ## Unreleased
 
+### Fixed
+- Marked the `400 DeviceTypeNotAllowed` results as historical in four documents; the endpoint now
+  returns `500` for that title. Added the missing methodology row to the README index.
+
 ### Changed
 - Roadmap corrected: console capture requires a **devkit**, not retail dev mode, because the
   console client delegates device auth to the OS service.
@@ -21,6 +25,10 @@ All notable changes to this repository. Dates are local to the investigation.
 - Console client static analysis incorporated: the app delegates auth to the OS `AuthManager`
   service, so app-level capture cannot see device auth; devkit proxy/cert path identified.
 ## Unreleased
+
+### Fixed
+- Marked the `400 DeviceTypeNotAllowed` results as historical in four documents; the endpoint now
+  returns `500` for that title. Added the missing methodology row to the README index.
 
 ### Changed
 - Roadmap corrected: console capture requires a **devkit**, not retail dev mode, because the

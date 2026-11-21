@@ -8,7 +8,7 @@ next person does not repeat them.
 **Tried:** ~250 combinations of user agent, `X-MS-Device-Info`, `x-gssv-client`, `sdkType`,
 `osName`, model strings, markets, API versions, Samsung and Fire TV metadata.
 
-**Result:** every session start for KI 2 Classic returned `400 DeviceTypeNotAllowed`.
+**Result:** at the time (2026-11-19), every session start for KI 2 Classic returned `400 DeviceTypeNotAllowed`.
 
 **Why it fails:** the device class is not read from client-advertised metadata. It arrives
 through the authenticated device token.
