@@ -63,6 +63,13 @@ different `DeviceModel` values on the same account.
 - **Would answer:** controlled experiments changing hardware model strings on the RPS path
   (which the client derives from hardware) — requires driver-level work, not planned.
 
+## Q9. What does `XblaProcessXcosDeviceToken` do differently?
+
+Two processing paths exist for two console generations. Which fields differ server-side is
+unknown.
+
+- **Would answer:** console firmware analysis beyond what public research documents.
+
 ## Q9a. Was there an enforcement window on launch day?
 
 A creator played GTA VI on a PS3 via GR33N on 2026-11-19, then lost access. The stream is
@@ -105,9 +112,17 @@ Three candidate causes, in order of likelihood:
   might be repairable. The conversion step is closed separately: apps cannot call it, so an XCOS
   token obtained outside the console is useless regardless.
 
-## Q9. What does `XblaProcessXcosDeviceToken` do differently?
+## Q11. Can one console identity back more than one account or session?
 
-Two processing paths exist for two console generations. Which fields differ server-side is
-unknown.
+A device token is minted at boot, before any user signs in, and lives ~14 days. XSTS tokens are
+per-request and body-bound. Nothing observed so far consumes the device token per session.
 
-- **Would answer:** console firmware analysis beyond what public research documents.
+- **Unknown:** whether GSSV or session start binds the device record to one account or session at
+  a time, and whether one device appearing for several accounts from different addresses trips
+  anomaly detection.
+- **Would answer:** two entitled accounts on the same console — one sequential session start
+  each, then two concurrent starts. Status codes only.
+- **Why it matters:** it decides whether a signing relay ("marionette") is viable at all, or needs
+  one console per user.
+- **Risk:** this is exactly the pattern that gets a console and account banned. Throwaway accounts
+  and hardware only.

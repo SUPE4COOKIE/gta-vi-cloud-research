@@ -5,6 +5,10 @@ All notable changes to this repository. Dates are local to the investigation.
 ## Unreleased
 
 ### Added
+- Q11 on console-identity concurrency: the 14-day device token is not single-use, XSTS is
+  per-request and body-bound, and multi-account reuse is untested and ban-prone.
+
+### Added
 - Clarified the device claims: `dty` is environment-shaped (a Series can present `XboxOne` for
   BC titles) while `ddm` / `sbx` are the likely inputs behind `0x8015DC19`, both boot-set and not
   client-selectable.
