@@ -242,8 +242,18 @@ What remains on the console side:
 |---|---|---|
 | Passive harvest from SystemOS traffic already captured | only what the OS already asked for; expiring tokens | free, offline |
 | Self-built Dev Mode package (a real title identity in `XDKS.1`) | a native title-side token; maybe signatures only for pre-authorized URLs | hours |
-| Register/launch `Microsoft.xCloudConsole2` | the production client's full GSSV login | high, package may be unobtainable |
+| Launch `Microsoft.xCloudConsole2` | — **closed by measurement, see below** | — |
 | One request with the token already mintable | a yes/no on whether the header is required at all | one call |
+
+The third row is not reopened here; it was recorded as closed before this section was written and
+the earlier entry was wrong. Retail apps cannot start in Dev Mode: `POST /api/taskmanager/app` for
+`Microsoft.xCloudConsole2…` returns `400` with `ErrorCode -2147219196` (`0x80040904`), Edge returns
+`0x8004090a`, neither ran across 60 follow-up checks, and the Dev Mode home has no Game Pass or
+Cloud tiles. The app is also irrelevant to what the network sees: it never calls `device.auth` or
+XSTS itself, it asks the WinRT facade over the out-of-process `XblAuthManager`, which owns the
+request builder. See [console-attestation.md](console-attestation.md) and
+[windows-gamingservices.md](windows-gamingservices.md). That same delegation is why the auth
+traffic we *can* capture comes from system services rather than from the app.
 
 The last row is the cheapest way to convert the open question into a fact and should be read
 before spending anything on the others.
